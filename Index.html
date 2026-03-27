@@ -1,0 +1,3106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema Industrial de Gestão de Motores Elétricos</title>
+  <style>
+    :root{
+      --azul:#1e7a45;
+      --azul-escuro:#12161c;
+      --azul-claro:#f6f8f9;
+      --verde:#0f8a5f;
+      --verde-claro:#e9f8f1;
+      --amarelo:#c88a04;
+      --amarelo-claro:#fff6dd;
+      --vermelho:#b42318;
+      --vermelho-claro:#fdebec;
+      --roxo:#6b4cd6;
+      --roxo-claro:#f2edff;
+      --cinza-bg:#f5f7f8;
+      --card:#ffffff;
+      --texto:#1a1f26;
+      --texto-suave:#617184;
+      --borda:#e2e7ec;
+      --sombra:0 12px 30px rgba(18,22,28,.08);
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--cinza-bg);color:var(--texto)}
+    .app{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+    .sidebar{position:sticky;top:0;height:100vh;overflow:auto;padding:22px 18px;color:var(--texto);background:linear-gradient(180deg,#ffffff 0%, #fbfcfc 100%);border-right:1px solid var(--borda)}
+    .brand{padding:14px;border:1px solid var(--borda);border-radius:22px;background:#fff;box-shadow:var(--sombra);margin-bottom:18px}
+    .brand h1{margin:0;font-size:23px;line-height:1.12;color:#111418}
+    .brand p{margin:8px 0 0;font-size:13px;line-height:1.45;color:var(--texto-suave)}
+    .menu{display:flex;flex-direction:column;gap:10px}
+    .menu button{width:100%;border:1px solid var(--borda);background:#fff;color:var(--texto);border-radius:16px;padding:14px;font-weight:700;text-align:left;cursor:pointer;transition:.18s ease;box-shadow:0 4px 14px rgba(24,32,40,.03)}
+    .menu button:hover{transform:translateY(-1px);border-color:#d6dde6}
+    .menu button.active{background:linear-gradient(90deg, var(--verde-claro) 0%, var(--amarelo-claro) 55%, var(--vermelho-claro) 100%);color:#111418;transform:translateY(-1px)}
+    .sidebar-box{margin-top:18px;background:#fff;border:1px solid var(--borda);border-radius:18px;padding:14px;font-size:13px;line-height:1.55;box-shadow:0 4px 14px rgba(24,32,40,.03)}
+    .content{padding:24px;min-width:0}
+    .topbar{background:#fff;border:1px solid var(--borda);box-shadow:var(--sombra);border-radius:22px;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+    .topbar h2{margin:0;color:#111418;font-size:28px}
+    .topbar p{margin:6px 0 0;color:var(--texto-suave);font-size:14px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .page{display:none}
+    .page.active{display:block}
+    .grid{display:grid;gap:18px}
+    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .card{background:#fff;border:1px solid var(--borda);border-radius:var(--radius);box-shadow:var(--sombra);padding:20px;min-width:0}
+    .card h3{margin:0 0 12px;font-size:20px;color:#111418}
+    .section-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px}
+    .section-head p{margin:6px 0 0;color:var(--texto-suave);font-size:14px}
+    .kpi{min-height:134px;display:flex;flex-direction:column;justify-content:center;gap:7px}
+    .kpi .label{font-size:12px;text-transform:uppercase;letter-spacing:.45px;font-weight:700;color:var(--texto-suave)}
+    .kpi .valor{font-size:38px;font-weight:700;color:var(--azul-escuro)}
+    .kpi .sub{font-size:13px;color:var(--texto-suave)}
+    .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .field label{font-size:13px;font-weight:700;color:#32404d}
+    input,select,textarea,button{font:inherit}
+    input,select,textarea{width:100%;border:1px solid #c8d4e1;background:#fff;border-radius:14px;padding:12px 13px;outline:none}
+    input:focus,select:focus,textarea:focus{border-color:#7db2e8;box-shadow:0 0 0 3px rgba(11,79,138,.10)}
+    textarea{min-height:94px;resize:vertical}
+    button{border:0;border-radius:14px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .btn-azul{background:#111418;color:#fff}.btn-verde{background:var(--verde);color:#fff}.btn-cinza{background:#eef2f5;color:#1e3448}.btn-vermelho{background:var(--vermelho);color:#fff}.btn-roxo{background:linear-gradient(90deg,var(--verde) 0%, var(--amarelo) 55%, var(--vermelho) 100%);color:#111418}
+    .help{font-size:12px;color:var(--texto-suave)} .full{grid-column:1 / -1}
+    .form-grid-2,.form-grid-3,.form-grid-4,.form-grid-5{display:grid;gap:14px}
+    .form-grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .form-grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .form-grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .form-grid-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+    .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+    .toolbar .field{flex:1;min-width:180px}
+    .table-wrap{overflow:auto;border:1px solid var(--borda);border-radius:16px;max-height:500px;background:#fff}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{padding:11px 10px;border-bottom:1px solid #e8eef5;text-align:left;vertical-align:top}
+    th{background:#f7fbff;position:sticky;top:0;z-index:1;color:#29455f}
+    .status,.pill{display:inline-flex;align-items:center;justify-content:center;padding:6px 11px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+    .status-operando{background:var(--verde-claro);color:var(--verde)}
+    .status-alerta{background:var(--amarelo-claro);color:#9c6b00}
+    .status-critico{background:var(--vermelho-claro);color:var(--vermelho)}
+    .status-parado{background:#edf2f8;color:#526273}
+    .iso-boa{background:var(--verde-claro);color:var(--verde)}
+    .iso-monitorar{background:var(--amarelo-claro);color:#9c6b00}
+    .iso-crítica,.iso-critica{background:var(--vermelho-claro);color:var(--vermelho)}
+    .pill-roxo{background:var(--roxo-claro);color:var(--roxo)}
+    .motor-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+    .motor-card{border:1px solid var(--borda);border-radius:22px;padding:18px;background:#fff;box-shadow:0 8px 20px rgba(24,32,40,.04)}
+    .motor-card h4{margin:0 0 6px;font-size:18px;color:var(--azul-escuro)}
+    .motor-card p{margin:5px 0;font-size:14px}
+    .motor-card .acoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+    .mini-box{background:#f8fbff;border:1px solid #e0ebf7;border-radius:14px;padding:10px;font-size:13px}
+    .mini-box strong{display:block;color:var(--azul-escuro);margin-bottom:4px}
+    .timeline{display:flex;flex-direction:column;gap:14px}
+    .timeline-item{border-left:4px solid var(--azul);padding:12px 14px;background:#f9fbfe;border-radius:0 14px 14px 0}
+    .timeline-item h4{margin:0 0 6px;font-size:16px;color:var(--azul-escuro)}
+    .timeline-item p{margin:4px 0;font-size:14px}
+    .report-header{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px;padding-bottom:14px;border-bottom:2px solid #dce7f2}
+    .report-title h3{margin:0;font-size:24px}
+    .report-title p{margin:6px 0 0;color:var(--texto-suave)}
+    .report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:16px}
+    .report-box{border:1px solid var(--borda);border-radius:14px;padding:12px;background:#fff}
+    .report-box h4{margin:0 0 10px;color:#111418;font-size:15px;text-transform:uppercase;letter-spacing:.3px}
+    .report-row{display:grid;grid-template-columns:220px 1fr;gap:10px;padding:6px 0;border-bottom:1px dashed #e1e8ef;font-size:14px}
+    .report-row:last-child{border-bottom:0}
+    .report-row strong{color:#314657}
+    .score-box{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-radius:18px;background:linear-gradient(90deg, rgba(31,143,78,.08) 0%, rgba(228,183,43,.08) 55%, rgba(217,41,62,.08) 100%);border:1px solid #e5eaf0;margin-bottom:14px}
+    .score-big{font-size:36px;font-weight:800;color:#111418}
+    .warning-list{display:grid;gap:10px}
+    .warning-item{border:1px solid var(--borda);border-radius:14px;padding:12px;background:#fff}
+    .partes-box{border:1px solid var(--borda);border-radius:16px;padding:14px;background:#fbfdff}
+    .partes-linha{display:grid;grid-template-columns:2fr .8fr 1fr 1fr auto;gap:8px;align-items:end;margin-top:8px}
+    .subgrid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .muted{color:var(--texto-suave)}
+    .hidden{display:none !important}
+    @media (max-width:1240px){
+      .app{grid-template-columns:1fr}
+      .sidebar{position:relative;height:auto}
+      .content{padding:16px}
+      .grid-4,.grid-3,.grid-2,.form-grid-2,.form-grid-3,.form-grid-4,.form-grid-5,.report-grid,.subgrid-4,.partes-linha{grid-template-columns:1fr}
+      .topbar{flex-direction:column;align-items:flex-start}
+      .report-row{grid-template-columns:1fr}
+    }
+    @media print{
+      body{background:#fff}
+      .sidebar,.topbar,.no-print{display:none !important}
+      .app{display:block}
+      .content{padding:0}
+      .page{display:none !important}
+      #page-relatorio.active{display:block !important}
+      #page-relatorio .card{box-shadow:none;border:0;border-radius:0;padding:0}
+      .report-box,.table-wrap{break-inside:avoid;page-break-inside:avoid}
+      .table-wrap{max-height:none;overflow:visible;border:1px solid #d0dbe6;border-radius:0}
+      th{position:static}
+    }
+  </style>
+
+  <style id="ajuste-topo-tla">
+    .app{display:block !important;}
+    .sidebar{
+      position:fixed !important;
+      top:0 !important;
+      left:0 !important;
+      right:0 !important;
+      height:84px !important;
+      padding:12px 18px !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:space-between !important;
+      overflow:visible !important;
+      z-index:1000 !important;
+      background:#ffffff !important;
+      border-right:0 !important;
+      border-bottom:1px solid var(--borda) !important;
+      box-shadow:0 10px 24px rgba(18,22,28,.08) !important;
+    }
+
+    .brand{
+      margin:0 !important;
+      padding:0 !important;
+      border:0 !important;
+      box-shadow:none !important;
+      background:transparent !important;
+      flex:0 0 auto !important;
+    }
+
+    .brand-header{
+      display:flex !important;
+      align-items:center !important;
+      gap:12px !important;
+    }
+
+    .brand-logo{
+      width:56px !important;
+      height:56px !important;
+      border:0 !important;
+      background:transparent !important;
+      box-shadow:none !important;
+      border-radius:0 !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      overflow:visible !important;
+      flex:0 0 56px !important;
+    }
+
+    .brand-logo img{
+      width:56px !important;
+      height:56px !important;
+      object-fit:contain !important;
+      display:block !important;
+      background:transparent !important;
+    }
+
+    .brand-text h1{
+      font-size:20px !important;
+      line-height:1.02 !important;
+      margin:0 !important;
+      color:#111418 !important;
+    }
+
+    .brand-text p{
+      display:none !important;
+    }
+
+    .menu{
+      display:flex !important;
+      flex-direction:row !important;
+      gap:10px !important;
+      align-items:center !important;
+      margin:0 0 0 auto !important;
+      flex-wrap:wrap !important;
+      justify-content:flex-end !important;
+    }
+
+    .menu button{
+      width:auto !important;
+      min-width:unset !important;
+      text-align:center !important;
+      padding:11px 14px !important;
+      border-radius:14px !important;
+      margin:0 !important;
+    }
+
+    .sidebar-box{
+      display:none !important;
+    }
+
+    .content{
+      padding-top:108px !important;
+    }
+
+    @media (max-width: 1100px){
+      .sidebar{
+        height:auto !important;
+        padding:10px 14px !important;
+        align-items:flex-start !important;
+        gap:10px !important;
+        flex-wrap:wrap !important;
+      }
+
+      .brand{
+        width:100% !important;
+      }
+
+      .menu{
+        width:100% !important;
+        justify-content:flex-start !important;
+      }
+
+      .content{
+        padding-top:150px !important;
+      }
+
+      .brand-text h1{
+        font-size:18px !important;
+      }
+    }
+
+    @media print{
+      .sidebar{display:none !important;}
+      .content{padding-top:0 !important;}
+    }
+  </style>
+
+
+<style id="ajuste-botoes-fonte-mobile">
+  body{
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .topbar, .sidebar, .menu button, .card, input, select, textarea, button{
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif !important;
+  }
+
+  .menu button{
+    background:#c62828 !important;
+    color:#ffffff !important;
+    border:1px solid #b71c1c !important;
+    box-shadow:0 6px 14px rgba(198,40,40,.18) !important;
+    font-size:14px !important;
+    font-weight:700 !important;
+    letter-spacing:.2px !important;
+  }
+
+  .menu button:hover{
+    background:#b71c1c !important;
+    border-color:#9f1717 !important;
+    transform:translateY(-1px) !important;
+  }
+
+  .menu button.active{
+    background:#8e1414 !important;
+    color:#fff !important;
+    border-color:#7c1010 !important;
+  }
+
+  .topbar h2, .brand-text h1, .card h3, .report-title h3{
+    font-weight:700 !important;
+    letter-spacing:.1px !important;
+  }
+
+  .topbar p, .section-head p, .muted, .help, .brand p{
+    font-size:13px !important;
+    line-height:1.45 !important;
+  }
+
+  .card{
+    border-radius:20px !important;
+  }
+
+  input, select, textarea{
+    font-size:15px !important;
+    min-height:46px !important;
+    border-radius:14px !important;
+  }
+
+  textarea{
+    min-height:110px !important;
+  }
+
+  button{
+    min-height:44px !important;
+  }
+
+  .menu{
+    gap:8px !important;
+  }
+
+  .menu button{
+    min-height:42px !important;
+    padding:10px 14px !important;
+    border-radius:12px !important;
+  }
+
+  .content{
+    max-width:100% !important;
+  }
+
+  .grid, .grid-2, .grid-3, .grid-4,
+  .form-grid-2, .form-grid-3, .form-grid-4, .form-grid-5,
+  .report-grid, .subgrid-4, .mini-grid{
+    gap:14px !important;
+  }
+
+  .score-big{
+    font-size:32px !important;
+  }
+
+  @media (max-width: 900px){
+    .content{
+      padding:14px !important;
+    }
+
+    .topbar{
+      border-radius:18px !important;
+      padding:14px 16px !important;
+    }
+
+    .topbar h2{
+      font-size:24px !important;
+    }
+
+    .card{
+      padding:16px !important;
+      border-radius:18px !important;
+    }
+
+    .motor-card{
+      border-radius:18px !important;
+      padding:14px !important;
+    }
+
+    .menu button{
+      font-size:13px !important;
+      padding:10px 12px !important;
+    }
+  }
+
+  @media (max-width: 680px){
+    .sidebar{
+      padding:10px 12px !important;
+    }
+
+    .brand-header{
+      gap:10px !important;
+    }
+
+    .brand-logo{
+      width:48px !important;
+      height:48px !important;
+      flex:0 0 48px !important;
+    }
+
+    .brand-logo img{
+      width:48px !important;
+      height:48px !important;
+    }
+
+    .brand-text h1{
+      font-size:16px !important;
+      line-height:1.05 !important;
+    }
+
+    .menu{
+      display:grid !important;
+      grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+      width:100% !important;
+      gap:8px !important;
+    }
+
+    .menu button{
+      width:100% !important;
+      padding:10px 8px !important;
+      font-size:12px !important;
+      border-radius:12px !important;
+      min-height:40px !important;
+    }
+
+    .content{
+      padding-top:162px !important;
+    }
+
+    .topbar{
+      margin-bottom:14px !important;
+    }
+
+    .topbar h2{
+      font-size:21px !important;
+    }
+
+    .topbar p{
+      font-size:12px !important;
+    }
+
+    .kpi .valor{
+      font-size:28px !important;
+    }
+
+    .score-big{
+      font-size:28px !important;
+    }
+
+    .report-row{
+      grid-template-columns:1fr !important;
+      gap:4px !important;
+    }
+
+    input, select, textarea{
+      font-size:16px !important;
+    }
+  }
+
+  @media (max-width: 420px){
+    .content{
+      padding-top:170px !important;
+      padding-left:10px !important;
+      padding-right:10px !important;
+    }
+
+    .card{
+      padding:14px !important;
+    }
+
+    .menu{
+      grid-template-columns:1fr 1fr !important;
+    }
+  }
+</style>
+
+
+<style id="page-actions-style">
+  .page-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+</style>
+
+
+<style id="padronizacao-botoes-profissional">
+  button,
+  .btn-azul,
+  .btn-cinza,
+  .btn-vermelho,
+  .btn-verde,
+  .menu button{
+    font-family:"Segoe UI", Arial, Helvetica, sans-serif !important;
+    font-weight:700 !important;
+    letter-spacing:.15px !important;
+    border-radius:14px !important;
+    min-height:44px !important;
+    padding:11px 16px !important;
+    transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease, border-color .15s ease !important;
+  }
+
+  button:hover,
+  .btn-azul:hover,
+  .btn-cinza:hover,
+  .btn-vermelho:hover,
+  .btn-verde:hover,
+  .menu button:hover{
+    transform:translateY(-1px);
+  }
+
+  .btn-azul{
+    background:#111418 !important;
+    color:#ffffff !important;
+    border:1px solid #111418 !important;
+    box-shadow:0 8px 18px rgba(17,20,24,.14) !important;
+  }
+
+  .btn-azul:hover{
+    background:#000000 !important;
+    border-color:#000000 !important;
+    box-shadow:0 10px 20px rgba(0,0,0,.18) !important;
+  }
+
+  .btn-cinza{
+    background:#eef2f5 !important;
+    color:#233242 !important;
+    border:1px solid #d8e0e8 !important;
+    box-shadow:0 6px 14px rgba(35,50,66,.06) !important;
+  }
+
+  .btn-cinza:hover{
+    background:#e7edf2 !important;
+    border-color:#ccd6df !important;
+    box-shadow:0 8px 16px rgba(35,50,66,.08) !important;
+  }
+
+  .btn-vermelho{
+    background:#b42318 !important;
+    color:#ffffff !important;
+    border:1px solid #b42318 !important;
+    box-shadow:0 8px 18px rgba(180,35,24,.16) !important;
+  }
+
+  .btn-vermelho:hover{
+    background:#981d14 !important;
+    border-color:#981d14 !important;
+  }
+
+  .btn-verde{
+    background:#0f8a5f !important;
+    color:#ffffff !important;
+    border:1px solid #0f8a5f !important;
+    box-shadow:0 8px 18px rgba(15,138,95,.14) !important;
+  }
+
+  .btn-verde:hover{
+    background:#0b744f !important;
+    border-color:#0b744f !important;
+  }
+
+  .menu button{
+    background:#c62828 !important;
+    color:#ffffff !important;
+    border:1px solid #ad1f1f !important;
+    box-shadow:0 8px 18px rgba(198,40,40,.18) !important;
+  }
+
+  .menu button:hover{
+    background:#b71c1c !important;
+    border-color:#9f1717 !important;
+  }
+
+  .menu button.active{
+    background:#8f1414 !important;
+    color:#ffffff !important;
+    border-color:#7d1010 !important;
+    box-shadow:0 10px 20px rgba(143,20,20,.20) !important;
+  }
+
+  .motor-card .acoes,
+  .actions,
+  .page-actions,
+  .toolbar{
+    gap:10px !important;
+  }
+
+  .partes-box .btn-azul{
+    min-width:150px !important;
+  }
+
+  @media (max-width: 680px){
+    button,
+    .btn-azul,
+    .btn-cinza,
+    .btn-vermelho,
+    .btn-verde,
+    .menu button{
+      min-height:42px !important;
+      font-size:13px !important;
+      padding:10px 12px !important;
+      border-radius:12px !important;
+    }
+  }
+</style>
+
+
+<style id="health-bar-style">
+  .health-wrap{
+    margin-top:10px;
+  }
+  .health-label{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    font-size:12px;
+    font-weight:700;
+    color:#5f6e7c;
+    margin-bottom:6px;
+  }
+  .health-track{
+    width:100%;
+    height:12px;
+    border-radius:999px;
+    background:#e9eef3;
+    overflow:hidden;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.06);
+  }
+  .health-fill{
+    height:100%;
+    width:0%;
+    border-radius:999px;
+    transition:width .25s ease, background .25s ease;
+  }
+</style>
+
+
+<style id="cards-saude-preview-style">
+  .saude-cards-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:16px;
+    margin-top:18px;
+  }
+
+  .saude-card{
+    background:#fff;
+    border:1px solid #e3e8ee;
+    border-radius:20px;
+    padding:18px;
+    box-shadow:0 10px 24px rgba(18,22,28,.05);
+  }
+
+  .saude-card-header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:12px;
+  }
+
+  .saude-icon{
+    width:44px;
+    height:44px;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+    font-weight:700;
+    flex:0 0 44px;
+  }
+
+  .saude-icon.verde{background:#edf7f0;color:#1f8f4e;}
+  .saude-icon.amarelo{background:#fff8e6;color:#b78600;}
+  .saude-icon.laranja{background:#fff0e8;color:#d96a1a;}
+  .saude-icon.vermelho{background:#fff0f2;color:#c62828;}
+  .saude-icon.cinza{background:#f1f4f7;color:#425466;}
+
+  .saude-card h4{
+    margin:0;
+    font-size:17px;
+    color:#111418;
+  }
+
+  .saude-card p{
+    margin:6px 0 0;
+    line-height:1.5;
+    color:#5f6e7c;
+    font-size:14px;
+  }
+
+  .saude-tag{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:30px;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+    margin-top:12px;
+  }
+
+  .saude-tag.verde{background:#edf7f0;color:#1f8f4e;}
+  .saude-tag.amarelo{background:#fff8e6;color:#b78600;}
+  .saude-tag.laranja{background:#fff0e8;color:#d96a1a;}
+  .saude-tag.vermelho{background:#fff0f2;color:#c62828;}
+  .saude-tag.cinza{background:#f1f4f7;color:#425466;}
+
+  .saude-exemplo-box{
+    margin-top:18px;
+    border:1px solid #e3e8ee;
+    border-radius:20px;
+    background:linear-gradient(180deg,#fff 0%,#fafcfd 100%);
+    padding:18px;
+  }
+
+  .saude-exemplo-box h3{
+    margin-bottom:10px !important;
+  }
+
+  .saude-exemplo-step{
+    padding:12px 14px;
+    border-radius:14px;
+    border:1px solid #edf1f5;
+    background:#fff;
+    margin-top:10px;
+    font-size:14px;
+    color:#425466;
+  }
+
+  @media (max-width: 980px){
+    .saude-cards-grid{
+      grid-template-columns:1fr 1fr;
+    }
+  }
+
+  @media (max-width: 680px){
+    .saude-cards-grid{
+      grid-template-columns:1fr;
+    }
+
+    .saude-card{
+      padding:16px;
+      border-radius:18px;
+    }
+  }
+</style>
+
+
+<style id="historico-relatorio-ajuste">
+  .historico-blocos{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .historico-item{
+    border:1px solid #d8e0e8;
+    border-radius:10px;
+    overflow:hidden;
+    background:#fff;
+  }
+  .historico-tabela{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+  }
+  .historico-tabela th,
+  .historico-tabela td{
+    border:1px solid #d8e0e8;
+    padding:6px 7px;
+    vertical-align:top;
+    word-break:break-word;
+  }
+  .historico-subhead th{
+    background:#f7f9fb;
+    font-size:12px;
+  }
+  .historico-textos td{
+    min-height:78px;
+    white-space:pre-wrap;
+    line-height:1.28;
+  }
+  .historico-pecas td{
+    background:#fafbfc;
+    font-size:12px;
+  }
+
+  @media print{
+    .historico-blocos{
+      gap:6px !important;
+    }
+    .historico-item{
+      break-inside:avoid;
+      page-break-inside:avoid;
+      border:1px solid #bfc8d1 !important;
+      border-radius:0 !important;
+    }
+    .historico-tabela{
+      table-layout:fixed !important;
+      width:100% !important;
+      font-size:8.4pt !important;
+    }
+    .historico-tabela th,
+    .historico-tabela td{
+      border:1px solid #bfc8d1 !important;
+      padding:4px 5px !important;
+      line-height:1.15 !important;
+    }
+    .historico-topo td:nth-child(1){width:8%}
+    .historico-topo td:nth-child(2){width:10%}
+    .historico-topo td:nth-child(3){width:12%}
+    .historico-topo td:nth-child(4){width:18%}
+    .historico-topo td:nth-child(5){width:10%}
+    .historico-topo td:nth-child(6){width:10%}
+    .historico-topo td:nth-child(7){width:10%}
+    .historico-topo td:nth-child(8){width:10%}
+    .historico-topo td:nth-child(9){width:12%}
+    .historico-subhead th{
+      background:#f3f4f6 !important;
+      color:#000 !important;
+      font-size:8.6pt !important;
+      padding:4px 5px !important;
+    }
+    .historico-textos td{
+      min-height:62px !important;
+      height:62px !important;
+      white-space:pre-wrap !important;
+      line-height:1.22 !important;
+      font-size:8.7pt !important;
+    }
+    .historico-pecas td{
+      font-size:8pt !important;
+      background:#fafafa !important;
+    }
+  }
+</style>
+
+
+<style id="ajuste-impressao-economico-final">
+@page{
+  size:A4 portrait;
+  margin:6mm;
+}
+
+@media print{
+  html, body{
+    width:210mm !important;
+    background:#fff !important;
+    font-size:9.4pt !important;
+    line-height:1.15 !important;
+    color:#000 !important;
+  }
+
+  body{
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  /* não desperdiçar folha */
+  .page{display:none !important;}
+  #page-relatorio.active{display:block !important;}
+
+  #page-relatorio .card{
+    padding:0 !important;
+    margin:0 !important;
+    border:0 !important;
+    box-shadow:none !important;
+    border-radius:0 !important;
+    background:#fff !important;
+  }
+
+  #page-relatorio .section-head,
+  #page-relatorio .toolbar,
+  #page-relatorio .no-print{
+    display:none !important;
+  }
+
+  #relatorioArea{
+    margin:0 !important;
+    padding:0 !important;
+    width:100% !important;
+  }
+
+  .report-header{
+    margin:0 0 5px 0 !important;
+    padding:0 0 4px 0 !important;
+    border-bottom:1px solid #bfc8d1 !important;
+    gap:4px !important;
+    page-break-inside:avoid !important;
+    break-inside:avoid !important;
+  }
+
+  .report-title h3{
+    font-size:14pt !important;
+    margin:0 !important;
+    line-height:1.05 !important;
+  }
+
+  .report-title p,
+  .muted{
+    font-size:8.2pt !important;
+    margin:2px 0 0 0 !important;
+    line-height:1.1 !important;
+  }
+
+  .score-box{
+    padding:5px 7px !important;
+    margin:0 0 5px 0 !important;
+    border:1px solid #c6d0d9 !important;
+    border-radius:8px !important;
+    box-shadow:none !important;
+    background:#fff !important;
+    page-break-inside:avoid !important;
+    break-inside:avoid !important;
+  }
+
+  .score-big{
+    font-size:17pt !important;
+    line-height:1 !important;
+  }
+
+  .health-wrap{
+    margin:0 0 5px 0 !important;
+  }
+
+  .health-label{
+    font-size:7.8pt !important;
+    margin-bottom:3px !important;
+  }
+
+  .health-track{
+    height:8px !important;
+  }
+
+  .report-grid{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:4px !important;
+    margin:0 0 6px 0 !important;
+    page-break-inside:avoid !important;
+  }
+
+  .report-box{
+    padding:4px 6px !important;
+    border:1px solid #c6d0d9 !important;
+    border-radius:6px !important;
+    background:#fff !important;
+  }
+
+  .report-box h4{
+    font-size:8.2pt !important;
+    margin:0 0 3px 0 !important;
+    line-height:1.05 !important;
+  }
+
+  .report-row{
+    display:grid !important;
+    grid-template-columns:92px 1fr !important;
+    gap:5px !important;
+    padding:1px 0 !important;
+    font-size:7.2pt !important;
+    line-height:1.05 !important;
+    border-bottom:1px dotted #d7dde3 !important;
+  }
+
+  /* histórico continua bonito e sem exagero de espaço */
+  .historico-blocos{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:5px !important;
+    margin-top:4px !important;
+  }
+
+  .historico-item{
+    border:1px solid #c6d0d9 !important;
+    border-radius:0 !important;
+    overflow:hidden !important;
+    background:#fff !important;
+    page-break-inside:avoid !important;
+    break-inside:avoid !important;
+  }
+
+  .historico-tabela{
+    width:100% !important;
+    border-collapse:collapse !important;
+    table-layout:fixed !important;
+    font-size:7.8pt !important;
+    line-height:1.08 !important;
+  }
+
+  .historico-tabela th,
+  .historico-tabela td{
+    border:1px solid #c6d0d9 !important;
+    padding:3px 4px !important;
+    vertical-align:top !important;
+    word-break:break-word !important;
+    overflow-wrap:break-word !important;
+  }
+
+  .historico-subhead th{
+    background:#f4f6f8 !important;
+    color:#000 !important;
+    font-size:7.9pt !important;
+    padding:3px 4px !important;
+  }
+
+  .historico-textos td{
+    min-height:52px !important;
+    height:52px !important;
+    white-space:pre-wrap !important;
+    line-height:1.16 !important;
+    font-size:8pt !important;
+  }
+
+  .historico-pecas td{
+    font-size:7.4pt !important;
+    background:#fafbfc !important;
+  }
+}
+</style>
+
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-header">
+          <div class="brand-logo">
+            <img src="data:image/png;base64,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" alt="Logo TLA">
+          </div>
+          <div class="brand-text">
+            <h1>Gestão Industrial de<br>Motores Elétricos</h1>
+            <p>Sistema completo para cadastro técnico, controle de manutenção, custos, peças, indicadores e relatório individual pronto para impressão.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu"><button class="active" data-page="dashboard" onclick="showPage('dashboard', this)">Dashboard geral</button>
+        
+        <button data-page="cadastro" onclick="showPage('cadastro', this)">Cadastro técnico</button>
+        <button data-page="historico" onclick="showPage('historico', this)">Histórico do motor</button>
+        <button data-page="relatorio" onclick="showPage('relatorio', this)">Relatório individual</button>
+        <button data-page="menu-manual" onclick="showPage('menu-manual', this)">Manual</button>
+    </div>
+
+      <div class="sidebar-box">
+        <strong>Padrão sugerido para código:</strong><br>
+        MT-REC-001 = Motor Recebimento<br>
+        MT-EXP-002 = Motor Expedição<br>
+        MT-UTIL-003 = Motor Utilidades
+      </div>
+
+      <div class="sidebar-box">
+        <strong>Controle industrial incluído:</strong><br>
+        custos de peças, mão de obra e serviços terceirizados, OS, horas de parada, ranking de custo por motor, custo acumulado e detalhamento por intervenção.
+      </div>
+    </aside>
+
+    <main class="content">
+<section id="page-dashboard" class="page active">
+        <div class="grid grid-4" id="kpis"></div>
+
+        <div class="grid grid-2" style="margin-top:18px;">
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h3>Consulta rápida da frota</h3>
+                <p>Pesquise por código, TAG, setor, fabricante, modelo, local ou descrição.</p>
+              </div>
+            </div>
+            <div class="toolbar">
+              <div class="field">
+                <label>Busca geral</label>
+                <input id="busca" type="text" placeholder="Ex.: MT-REC-001, WEG, expedição, bomba">
+              </div>
+              <div class="field">
+                <label>Status</label>
+                <select id="filtroStatus">
+                  <option value="">Todos</option>
+                  <option>Operando</option>
+                  <option>Alerta</option>
+                  <option>Crítico</option>
+                  <option>Parado</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Setor</label>
+                <input id="filtroSetor" type="text" placeholder="Ex.: Recebimento">
+              </div>
+              <div class="field">
+                <label>Estado da isolação</label>
+                <select id="filtroIsolacao">
+                  <option value="">Todos</option>
+                  <option>Boa</option>
+                  <option>Monitorar</option>
+                  <option>Crítica</option>
+                </select>
+              </div>
+              <div class="field" style="max-width:220px;">
+                <button class="btn-azul" onclick="renderMotores()">Aplicar filtros</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h3>Alertas do sistema</h3>
+                <p>Motores que merecem atenção mais rápida.</p>
+              </div>
+            </div>
+            <div id="alertasBox" class="warning-list"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:18px;">
+          <div class="card">
+            <div class="section-head">
+              <div><h3>Custo total acumulado</h3><p>Soma de todas as intervenções registradas.</p></div>
+            </div>
+            <div id="custoTotalBox" class="score-big">R$ 0,00</div>
+          </div>
+          <div class="card">
+            <div class="section-head">
+              <div><h3>Horas totais de parada</h3><p>Somatório das paradas informadas no histórico.</p></div>
+            </div>
+            <div id="horasParadaBox" class="score-big">0</div>
+          </div>
+          <div class="card">
+            <div class="section-head">
+              <div><h3>Motor mais oneroso</h3><p>Maior custo acumulado entre todos os motores.</p></div>
+            </div>
+            <div id="motorMaisCaroBox" class="muted">-</div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:18px;">
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h3>Ranking de custo por motor</h3>
+                <p>Equipamentos com maior custo acumulado.</p>
+              </div>
+            </div>
+            <div id="rankingCustos" class="warning-list"></div>
+          </div>
+
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h3>Custos por tipo de manutenção</h3>
+                <p>Consolidação dos gastos por categoria.</p>
+              </div>
+            </div>
+            <div id="custosPorTipo" class="warning-list"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px;">
+          <div class="section-head">
+            <div>
+              <h3>Motores cadastrados</h3>
+              <p>Cards operacionais com resumo técnico, custo acumulado e atalhos de ação.</p>
+            </div>
+          </div>
+          <div id="listaMotores" class="motor-list"></div>
+        </div>
+      </section>
+
+      <section id="page-cadastro" class="page">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3 id="formTitle">Cadastro técnico completo do motor</h3>
+              <p>Preencha identificação, dados de placa, condição operacional, manutenção e análise técnica.</p>
+            </div>
+            <div class="actions no-print">
+              <button class="btn-cinza" onclick="limparFormulario()">Novo cadastro</button>
+            </div>
+          </div>
+
+          <form id="motorForm">
+            <div class="form-grid-5">
+              <div class="field">
+                <label>Código do motor</label>
+                <input id="codigo" required placeholder="Ex.: MT-REC-001">
+                <div class="help">Código único do equipamento.</div>
+              </div>
+              <div class="field">
+                <label>TAG</label>
+                <input id="tag" placeholder="Ex.: MTR-204">
+              </div>
+              <div class="field">
+                <label>Status atual</label>
+                <select id="statusAtual">
+                  <option>Operando</option>
+                  <option>Alerta</option>
+                  <option>Crítico</option>
+                  <option>Parado</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Criticidade operacional</label>
+                <select id="criticidade">
+                  <option>Baixa</option>
+                  <option>Média</option>
+                  <option>Alta</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Setor / área</label>
+                <input id="setor" placeholder="Ex.: Recebimento">
+              </div>
+            </div>
+
+            <div class="form-grid-3" style="margin-top:14px;">
+              <div class="field">
+                <label>Descrição do equipamento</label>
+                <input id="descricao" placeholder="Ex.: Motor da esteira de recebimento">
+              </div>
+              <div class="field">
+                <label>Local de instalação</label>
+                <input id="localInstalacao" placeholder="Ex.: Linha 1 / Esteira A">
+              </div>
+              <div class="field">
+                <label>Data de instalação</label>
+                <input id="dataInstalacao" type="date">
+              </div>
+            </div>
+
+            <div class="form-grid-5" style="margin-top:14px;">
+              <div class="field"><label>Fabricante</label><input id="fabricante" placeholder="WEG, Siemens, ABB..."></div>
+              <div class="field"><label>Modelo</label><input id="modelo" placeholder="Modelo do motor"></div>
+              <div class="field"><label>Carcaça</label><input id="carcaca" placeholder="Ex.: 132S/M"></div>
+              <div class="field"><label>Grau de proteção (IP)</label><input id="ip" placeholder="Ex.: IP55"></div>
+              <div class="field"><label>Regime</label><input id="regime" placeholder="Ex.: S1"></div>
+            </div>
+
+            <div class="form-grid-5" style="margin-top:14px;">
+              <div class="field"><label>Potência (CV)</label><input id="potenciaCv" type="number" step="0.01" placeholder="Ex.: 10"></div>
+              <div class="field"><label>Potência (kW)</label><input id="potenciaKw" type="number" step="0.01" placeholder="Ex.: 7.5"></div>
+              <div class="field"><label>Tensão (V)</label><input id="tensao" placeholder="Ex.: 220/380/440"></div>
+              <div class="field"><label>Corrente nominal (A)</label><input id="corrente" placeholder="Ex.: 18,5"></div>
+              <div class="field"><label>Frequência (Hz)</label><input id="frequencia" placeholder="Ex.: 60"></div>
+            </div>
+
+            <div class="form-grid-5" style="margin-top:14px;">
+              <div class="field"><label>Rotação (RPM)</label><input id="rpm" placeholder="Ex.: 1750"></div>
+              <div class="field"><label>Fator de potência</label><input id="fp" placeholder="Ex.: 0,86"></div>
+              <div class="field"><label>Rendimento (%)</label><input id="rendimento" placeholder="Ex.: 91,2"></div>
+              <div class="field"><label>Classe de isolamento</label><input id="classeIsolamento" placeholder="Ex.: F"></div>
+              <div class="field"><label>Acoplamento / transmissão</label><input id="acoplamento" placeholder="Direto, correia, redutor..."></div>
+            </div>
+
+            <div class="form-grid-5" style="margin-top:14px;">
+              <div class="field"><label>Rolamento LA</label><input id="rolamentoLA" placeholder="Ex.: 6205"></div>
+              <div class="field"><label>Rolamento LOA</label><input id="rolamentoLOA" placeholder="Ex.: 6205"></div>
+              <div class="field"><label>Última troca de rolamentos</label><input id="trocaRolamento" type="date"></div>
+              <div class="field"><label>Data de rebobinamento</label><input id="rebobinamento" type="date"></div>
+              <div class="field"><label>Última lubrificação</label><input id="ultimaLubrificacao" type="date"></div>
+            </div>
+
+            <div class="form-grid-5" style="margin-top:14px;">
+              <div class="field"><label>Estado da isolação</label><select id="estadoIsolacao"><option>Boa</option><option>Monitorar</option><option>Crítica</option></select></div>
+              <div class="field"><label>Último teste de isolação</label><input id="dataIsolacao" type="date"></div>
+              <div class="field"><label>Resultado do teste (MΩ)</label><input id="resultadoIsolacao" placeholder="Ex.: 200 MΩ"></div>
+              <div class="field"><label>Vibração (mm/s)</label><input id="vibracao" placeholder="Ex.: 2,3"></div>
+              <div class="field"><label>Temperatura (°C)</label><input id="temperatura" placeholder="Ex.: 68"></div>
+            </div>
+
+            <div class="form-grid-4" style="margin-top:14px;">
+              <div class="field"><label>Última preventiva</label><input id="ultimaPreventiva" type="date"></div>
+              <div class="field"><label>Próxima preventiva</label><input id="proximaPreventiva" type="date"></div>
+              <div class="field"><label>Última corretiva</label><input id="ultimaCorretiva" type="date"></div>
+              <div class="field"><label>Última inspeção</label><input id="ultimaInspecao" type="date"></div>
+            </div>
+
+            <div class="form-grid-4" style="margin-top:14px;">
+              <div class="field"><label>Alinhamento</label><select id="alinhamento"><option>OK</option><option>Monitorar</option><option>Ruim</option></select></div>
+              <div class="field"><label>Limpeza</label><select id="limpeza"><option>OK</option><option>Monitorar</option><option>Ruim</option></select></div>
+              <div class="field"><label>Ruído</label><select id="ruido"><option>Normal</option><option>Moderado</option><option>Alto</option></select></div>
+              <div class="field"><label>Ventilação</label><select id="ventilacao"><option>OK</option><option>Monitorar</option><option>Ruim</option></select></div>
+            </div>
+
+            <div class="form-grid-2" style="margin-top:14px;">
+              <div class="field"><label>Defeito principal / anomalia</label><textarea id="defeitoPrincipal" placeholder="Ex.: vibração elevada no lado acoplado, aquecimento acima do normal, umidade na caixa de ligação..."></textarea></div>
+              <div class="field"><label>Causa provável da falha</label><textarea id="causaFalha" placeholder="Ex.: desalinhamento, sobrecarga, lubrificação inadequada, contaminação, desgaste do rolamento..."></textarea></div>
+            </div>
+
+            <div class="form-grid-2" style="margin-top:14px;">
+              <div class="field"><label>Peças / itens trocados recentemente</label><textarea id="pecasTrocadas" placeholder="Rolamento 6205, ventilador, retentor, termistor, selo, borne..."></textarea></div>
+              <div class="field"><label>Plano de ação / recomendação</label><textarea id="planoAcao" placeholder="Ex.: programar alinhamento, repetir teste de isolação, trocar rolamento na próxima parada, revisar ventilação..."></textarea></div>
+            </div>
+
+            <div class="field" style="margin-top:14px;">
+              <label>Observações gerais de engenharia / manutenção</label>
+              <textarea id="observacoesGerais" placeholder="Informações complementares do equipamento, criticidade do processo, restrições de parada, histórico importante etc."></textarea>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;" class="no-print">
+              <button type="submit" class="btn-verde">Salvar motor</button>
+              <button type="button" class="btn-cinza" onclick="showPage('dashboard')">Voltar ao dashboard</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="page-historico" class="page">
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h3>Registro de manutenção industrial</h3>
+                <p>Inclua intervenção, peças, custos e impactos operacionais do motor.</p>
+              </div>
+            </div>
+
+            <form id="manutForm">
+              <div class="form-grid-4">
+                <div class="field"><label>Código do motor</label><input id="manutCodigo" placeholder="Informe o código cadastrado"></div>
+                <div class="field"><label>Data</label><input id="manutData" type="date"></div>
+                <div class="field"><label>Tipo</label>
+                  <select id="manutTipo">
+                    <option>Preventiva</option><option>Corretiva</option><option>Preditiva</option><option>Inspeção</option><option>Lubrificação</option><option>Troca de rolamentos</option><option>Teste de isolação</option><option>Alinhamento</option><option>Rebobinamento</option>
+                  </select>
+                </div>
+                <div class="field"><label>OS / referência</label><input id="manutOS" placeholder="Ex.: OS-2026-0148"></div>
+              </div>
+
+              <div class="form-grid-2" style="margin-top:14px;">
+                <div class="field"><label>Serviço executado</label><textarea id="manutServico" placeholder="Descreva exatamente o que foi realizado"></textarea></div>
+                <div class="field"><label>Resultado / condição encontrada</label><textarea id="manutResultado" placeholder="Ex.: motor normalizado, isolação 250 MΩ, vibração reduzida, alinhamento corrigido..."></textarea></div>
+              </div>
+
+              <div class="form-grid-5" style="margin-top:14px;">
+                <div class="field"><label>Responsável</label><input id="manutResponsavel" placeholder="Nome do executante"></div>
+                <div class="field"><label>Parada necessária?</label><select id="manutParada"><option>Não</option><option>Sim</option></select></div>
+                <div class="field"><label>Horas de parada</label><input id="manutHoras" type="number" step="0.1" placeholder="Ex.: 2.5"></div>
+                <div class="field"><label>Custo mão de obra (R$)</label><input id="manutCustoMaoObra" placeholder="Ex.: 180,00"></div>
+                <div class="field"><label>Custo terceiros (R$)</label><input id="manutCustoTerceiros" placeholder="Ex.: 0,00"></div>
+              </div>
+
+              <div class="partes-box" style="margin-top:16px;">
+                <div class="section-head" style="margin-bottom:8px;">
+                  <div>
+                    <h3 style="font-size:16px; margin:0;">Peças aplicadas</h3>
+                    <p>Adicione quantas peças quiser. O sistema calcula o total automaticamente.</p>
+                  </div>
+                  <button type="button" class="btn-azul no-print" onclick="adicionarLinhaPeca()">Adicionar peça</button>
+                </div>
+                <div class="partes-linha muted" style="font-weight:700;">
+                  <div>Peça</div><div>Qtde</div><div>Valor unitário</div><div>Subtotal</div><div></div>
+                </div>
+                <div id="listaPecasForm"></div>
+                <div class="subgrid-4" style="margin-top:14px;">
+                  <div class="field"><label>Total peças (R$)</label><input id="manutTotalPecas" readonly></div>
+                  <div class="field"><label>Total mão de obra (R$)</label><input id="manutTotalMaoObra" readonly></div>
+                  <div class="field"><label>Total terceiros (R$)</label><input id="manutTotalTerceiros" readonly></div>
+                  <div class="field"><label>Custo total da intervenção (R$)</label><input id="manutCustoTotal" readonly></div>
+                </div>
+              </div>
+
+              <div style="margin-top:16px;" class="no-print">
+                <button type="submit" class="btn-azul">Registrar manutenção</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h3>Consulta do histórico por motor</h3>
+                <p>Selecione o código para visualizar resumo técnico, linha do tempo e custo acumulado.</p>
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <div class="field"><label>Código do motor</label><input id="historicoCodigo" placeholder="Ex.: MT-REC-001"></div>
+              <div class="field" style="max-width:220px;"><button class="btn-cinza" type="button" onclick="renderHistoricoMotor()">Carregar histórico</button></div>
+            </div>
+
+            <div id="historicoResumo" class="mini-grid" style="margin-top:16px;"></div>
+            <div id="historicoTimeline" class="timeline" style="margin-top:16px;"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px;">
+          <div class="section-head">
+            <div>
+              <h3>Histórico geral de manutenções</h3>
+              <p>Tabela consolidada com custos e impactos operacionais.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th><th>Código</th><th>Tipo</th><th>OS</th><th>Serviço</th><th>Responsável</th><th>Parada</th><th>Peças</th><th>M.O.</th><th>Terceiros</th><th>Total</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaManutencoes"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-relatorio" class="page">
+        <div class="card">
+          <div class="section-head no-print">
+            <div>
+              <h3>Relatório individual do motor</h3>
+              <p>Selecione um motor para gerar ficha técnica, histórico e custos completos.</p>
+            </div>
+          </div>
+
+          <div class="toolbar no-print" style="margin-bottom:18px;">
+            <div class="field"><label>Código do motor</label><input id="relatorioCodigo" placeholder="Ex.: MT-REC-001"></div>
+            
+            <div class="field" style="max-width:220px;">
+              <button class="btn-cinza" type="button" onclick="window.print()">Imprimir relatório</button>
+            </div>
+            <div class="field" style="max-width:220px;">
+              <button class="btn-azul" type="button" onclick="gerarRelatorio()">Gerar relatório</button>
+            </div>
+        
+          </div>
+
+          <div id="relatorioArea">
+            <div class="report-header">
+              <div class="report-title">
+                <h3>Relatório individual do motor</h3>
+                <p>Selecione um código para carregar os dados do equipamento.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-saude" class="page">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3>Como a saúde do motor é calculada</h3>
+              <p>Explicação simples para qualquer usuário entender de onde sai a nota de saúde do motor.</p>
+            </div>
+          </div>
+
+          <div class="saude-exemplo-box">
+            <h3 style="font-size:18px;">Visual em cards da saúde do motor</h3>
+            <p class="muted" style="margin:0 0 4px;">Aqui está uma prévia visual mais moderna da explicação, sem mexer na base funcional do sistema.</p>
+
+            <div class="saude-cards-grid">
+              <div class="saude-card">
+                <div class="saude-card-header">
+                  <div class="saude-icon verde">100</div>
+                  <div>
+                    <h4>Saúde começa em 100</h4>
+                  </div>
+                </div>
+                <p>Todo motor começa com 100 pontos. Esse é o cenário ideal, com condição geral boa e sem sinais fortes de risco.</p>
+                <div class="saude-tag verde">Ponto de partida</div>
+              </div>
+
+              <div class="saude-card">
+                <div class="saude-card-header">
+                  <div class="saude-icon amarelo">!</div>
+                  <div>
+                    <h4>Problemas tiram pontos</h4>
+                  </div>
+                </div>
+                <p>Status em alerta, isolação ruim, vibração alta, temperatura alta e preventiva atrasada vão derrubando a nota.</p>
+                <div class="saude-tag amarelo">Atenção</div>
+              </div>
+
+              <div class="saude-card">
+                <div class="saude-card-header">
+                  <div class="saude-icon cinza">⇣</div>
+                  <div>
+                    <h4>Quanto mais risco, menor a saúde</h4>
+                  </div>
+                </div>
+                <p>Um motor bem cuidado fica com nota alta. Um motor com mais risco ou sem manutenção adequada fica com nota baixa.</p>
+                <div class="saude-tag cinza">Lógica do cálculo</div>
+              </div>
+
+              <div class="saude-card">
+                <div class="saude-card-header">
+                  <div class="saude-icon verde">🟢</div>
+                  <div>
+                    <h4>Faixa verde</h4>
+                  </div>
+                </div>
+                <p>De 80 até 100 pontos. Indica um motor em condição boa, sem sinais fortes de problema no resumo geral.</p>
+                <div class="saude-tag verde">Boa condição</div>
+              </div>
+
+              <div class="saude-card">
+                <div class="saude-card-header">
+                  <div class="saude-icon amarelo">🟡</div>
+                  <div>
+                    <h4>Faixa amarela</h4>
+                  </div>
+                </div>
+                <p>De 40 até 79 pontos. O motor ainda pode operar, mas já pede mais acompanhamento e análise.</p>
+                <div class="saude-tag amarelo">Monitorar</div>
+              </div>
+
+              <div class="saude-card">
+                <div class="saude-card-header">
+                  <div class="saude-icon vermelho">🔴</div>
+                  <div>
+                    <h4>Faixa vermelha</h4>
+                  </div>
+                </div>
+                <p>Abaixo de 40 pontos. O motor entra em condição mais crítica e deve ganhar prioridade de manutenção.</p>
+                <div class="saude-tag vermelho">Risco alto</div>
+              </div>
+            </div>
+
+            <div class="saude-exemplo-box" style="margin-top:16px;">
+              <h3 style="font-size:18px;">Exemplo rápido</h3>
+              <div class="saude-exemplo-step"><strong>Passo 1:</strong> o motor começa com 100 pontos.</div>
+              <div class="saude-exemplo-step"><strong>Passo 2:</strong> se estiver em Alerta, perde 18 e vai para 82.</div>
+              <div class="saude-exemplo-step"><strong>Passo 3:</strong> se a isolação estiver em Monitorar, perde mais 15 e cai para 67.</div>
+              <div class="saude-exemplo-step"><strong>Passo 4:</strong> se a vibração estiver alta, a nota cai ainda mais.</div>
+            </div>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="card" style="box-shadow:none;">
+              <h3 style="font-size:18px;">1. A saúde sempre começa em 100</h3>
+              <p>Todo motor começa com <strong>100 pontos</strong>. Esse é o cenário ideal, ou seja, o motor está em boas condições gerais.</p>
+              <p>Depois disso, o sistema vai <strong>descontando pontos</strong> conforme encontra sinais de risco, desgaste ou necessidade de manutenção.</p>
+            </div>
+
+            <div class="card" style="box-shadow:none;">
+              <h3 style="font-size:18px;">2. Quanto mais problemas, menor a saúde</h3>
+              <p>Se o motor tiver alerta, vibração alta, temperatura alta, isolação ruim ou preventiva vencida, a nota vai caindo.</p>
+              <p>Então a lógica é esta:</p>
+              <p><strong>Motor melhor cuidado = saúde mais alta</strong><br>
+              <strong>Motor com mais risco = saúde mais baixa</strong></p>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:18px; box-shadow:none;">
+            <h3 style="font-size:18px;">3. O que tira pontos da saúde</h3>
+            <div class="table-wrap" style="max-height:none;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Condição</th>
+                    <th>Desconto na saúde</th>
+                    <th>Explicação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Status = Alerta</td>
+                    <td>-18 pontos</td>
+                    <td>O motor já apresenta algum sinal de atenção.</td>
+                  </tr>
+                  <tr>
+                    <td>Status = Crítico</td>
+                    <td>-35 pontos</td>
+                    <td>O motor está em condição muito pior e merece ação rápida.</td>
+                  </tr>
+                  <tr>
+                    <td>Status = Parado</td>
+                    <td>-28 pontos</td>
+                    <td>O motor não está disponível para operação normal.</td>
+                  </tr>
+                  <tr>
+                    <td>Isolação = Monitorar</td>
+                    <td>-15 pontos</td>
+                    <td>O teste de isolação já indica atenção.</td>
+                  </tr>
+                  <tr>
+                    <td>Isolação = Crítica</td>
+                    <td>-28 pontos</td>
+                    <td>A condição da isolação é ruim e pode gerar falha séria.</td>
+                  </tr>
+                  <tr>
+                    <td>Vibração acima de 2,8 mm/s</td>
+                    <td>-8 pontos</td>
+                    <td>O motor já começa a mostrar comportamento fora do ideal.</td>
+                  </tr>
+                  <tr>
+                    <td>Vibração acima de 4,5 mm/s</td>
+                    <td>-18 pontos</td>
+                    <td>O risco aumenta bastante, então o desconto é maior.</td>
+                  </tr>
+                  <tr>
+                    <td>Temperatura a partir de 70°C</td>
+                    <td>-8 pontos</td>
+                    <td>O motor já opera aquecido acima do confortável.</td>
+                  </tr>
+                  <tr>
+                    <td>Temperatura a partir de 85°C</td>
+                    <td>-20 pontos</td>
+                    <td>A temperatura está bem alta e ele perde mais saúde.</td>
+                  </tr>
+                  <tr>
+                    <td>Preventiva vencida</td>
+                    <td>-15 pontos</td>
+                    <td>O motor passou do prazo de manutenção.</td>
+                  </tr>
+                  <tr>
+                    <td>Preventiva faltando até 15 dias</td>
+                    <td>-8 pontos</td>
+                    <td>O motor ainda não venceu, mas já está perto da data de intervenção.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="grid grid-3" style="margin-top:18px;">
+            <div class="card" style="box-shadow:none;">
+              <h3 style="font-size:18px;">4. Como ler a barra de saúde</h3>
+              <p><strong>80 a 100</strong> → motor em condição boa</p>
+              <p><strong>60 a 79</strong> → motor ainda aceitável, mas merece atenção</p>
+              <p><strong>40 a 59</strong> → situação intermediária, já pede análise</p>
+              <p><strong>20 a 39</strong> → risco alto</p>
+              <p><strong>0 a 19</strong> → condição crítica</p>
+            </div>
+
+            <div class="card" style="box-shadow:none;">
+              <h3 style="font-size:18px;">5. O que a cor significa</h3>
+              <p><strong>Verde</strong> = melhor condição</p>
+              <p><strong>Amarelo</strong> = precisa acompanhar</p>
+              <p><strong>Laranja</strong> = atenção forte</p>
+              <p><strong>Vermelho</strong> = risco elevado</p>
+              <p>A barra vai mudando de cor conforme a nota da saúde diminui.</p>
+            </div>
+
+            <div class="card" style="box-shadow:none;">
+              <h3 style="font-size:18px;">6. Exemplo prático</h3>
+              <p>Um motor começa com <strong>100</strong>.</p>
+              <p>Se ele estiver em <strong>Alerta</strong>, a saúde vai para <strong>82</strong>.</p>
+              <p>Se também tiver <strong>isolação em Monitorar</strong>, cai para <strong>67</strong>.</p>
+              <p>Se ainda estiver com <strong>vibração alta</strong>, a nota pode cair ainda mais.</p>
+              <p>Ou seja: a saúde é um <strong>resumo rápido da condição geral</strong> do motor.</p>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:18px; box-shadow:none;">
+            <h3 style="font-size:18px;">7. Objetivo dessa saúde</h3>
+            <p>Essa nota não substitui a análise técnica. Ela serve para ajudar o usuário a enxergar rapidamente quais motores estão melhores e quais precisam de atenção primeiro.</p>
+            <p>Na prática, ela ajuda em três coisas:</p>
+            <p><strong>• priorizar manutenção</strong><br>
+            <strong>• identificar risco mais rápido</strong><br>
+            <strong>• comparar motores de forma visual e simples</strong></p>
+          </div>
+        </div>
+      </section>
+
+    
+<section id="page-manual" class="page">
+  <div class="card">
+    <div class="section-head">
+      <h3>Manual do Sistema</h3>
+      <p>Guia rápido para qualquer usuário entender como usar o sistema sem treinamento.</p>
+    </div>
+
+    <div class="saude-cards-grid">
+
+      <div class="saude-card">
+        <div class="saude-card-header">
+          <div class="saude-icon cinza">⚙️</div>
+          <h4>Cadastro de motor</h4>
+        </div>
+        <p>Preencha os dados técnicos corretamente. Quanto mais completo, melhor será a análise da saúde.</p>
+      </div>
+
+      <div class="saude-card">
+        <div class="saude-card-header">
+          <div class="saude-icon amarelo">🛠️</div>
+          <h4>Manutenções</h4>
+        </div>
+        <p>Registre sempre peças trocadas, datas e custos. Isso alimenta o histórico do motor.</p>
+      </div>
+
+      <div class="saude-card">
+        <div class="saude-card-header">
+          <div class="saude-icon verde">📊</div>
+          <h4>Dashboard</h4>
+        </div>
+        <p>Use o dashboard para identificar rapidamente quais motores precisam de atenção.</p>
+      </div>
+
+      <div class="saude-card">
+        <div class="saude-card-header">
+          <div class="saude-icon vermelho">⚠️</div>
+          <h4>Prioridade</h4>
+        </div>
+        <p>Motores com saúde baixa devem ser tratados primeiro para evitar falhas.</p>
+      </div>
+
+      <div class="saude-card">
+        <div class="saude-card-header">
+          <div class="saude-icon cinza">📄</div>
+          <h4>Relatórios</h4>
+        </div>
+        <p>Gere relatórios para registro, auditoria e tomada de decisão.</p>
+      </div>
+
+      <div class="saude-card">
+        <div class="saude-card-header">
+          <div class="saude-icon verde">🎯</div>
+          <h4>Objetivo</h4>
+        </div>
+        <p>Centralizar informações e facilitar decisões de manutenção com base em dados reais.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<section id="page-menu-manual" class="page">
+  <div class="card">
+    <div class="section-head">
+      <h3>Central de Manuais</h3>
+      <p>Escolha qual manual deseja visualizar.</p>
+    </div>
+
+    <div class="saude-cards-grid">
+
+      <div class="saude-card" onclick="showPage('manual')" style="cursor:pointer;">
+        <div class="saude-card-header">
+          <div class="saude-icon cinza">📘</div>
+          <h4>Manual do sistema</h4>
+        </div>
+        <p>Aprenda como usar o sistema completo, cadastro, histórico e relatórios.</p>
+      </div>
+
+      <div class="saude-card" onclick="showPage('saude')" style="cursor:pointer;">
+        <div class="saude-card-header">
+          <div class="saude-icon verde">📊</div>
+          <h4>Como a saúde é calculada</h4>
+        </div>
+        <p>Entenda como funciona a pontuação e como interpretar a condição dos motores.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</main>
+  </div>
+
+  <script>
+    const DB_KEY = 'motores_eletricos_db_industrial_v1';
+    let editandoId = null;
+    let pecasForm = [];
+
+    let db = carregarDB();
+
+    function carregarDB(){
+      const salvo = localStorage.getItem(DB_KEY);
+      if(salvo) return JSON.parse(salvo);
+
+      const inicial = {
+        motores:[
+          {
+            id: crypto.randomUUID(),
+            codigo:'MT-REC-001', tag:'MTR-001', statusAtual:'Operando', criticidade:'Alta', setor:'Recebimento',
+            descricao:'Motor da esteira de recebimento', localInstalacao:'Linha 1 / Esteira A', dataInstalacao:'2024-08-15',
+            fabricante:'WEG', modelo:'W22', carcaca:'132S', ip:'IP55', regime:'S1', potenciaCv:'10', potenciaKw:'7.5',
+            tensao:'220/380', corrente:'18,5', frequencia:'60', rpm:'1750', fp:'0,86', rendimento:'91,2',
+            classeIsolamento:'F', acoplamento:'Correia', rolamentoLA:'6205', rolamentoLOA:'6205', trocaRolamento:'2025-11-12',
+            rebobinamento:'', ultimaLubrificacao:'2026-03-01', estadoIsolacao:'Boa', dataIsolacao:'2026-02-10',
+            resultadoIsolacao:'200 MΩ', vibracao:'1,9', temperatura:'61', ultimaPreventiva:'2026-02-15',
+            proximaPreventiva:'2026-05-15', ultimaCorretiva:'2025-11-12', ultimaInspecao:'2026-03-08',
+            alinhamento:'OK', limpeza:'OK', ruido:'Normal', ventilacao:'OK', defeitoPrincipal:'Sem anomalias relevantes.',
+            causaFalha:'-', pecasTrocadas:'Rolamentos LA/LOA trocados em 11/2025.',
+            planoAcao:'Manter rotina trimestral de inspeção, lubrificação e megagem.',
+            observacoesGerais:'Equipamento crítico para o fluxo de recebimento.', criadoEm:new Date().toISOString()
+          },
+          {
+            id: crypto.randomUUID(),
+            codigo:'MT-EXP-002', tag:'MTR-088', statusAtual:'Alerta', criticidade:'Alta', setor:'Expedição',
+            descricao:'Motor do transportador da expedição', localInstalacao:'Doca 2', dataInstalacao:'2023-11-02',
+            fabricante:'Siemens', modelo:'1LE', carcaca:'160M', ip:'IP55', regime:'S1', potenciaCv:'15', potenciaKw:'11',
+            tensao:'380/660', corrente:'27,2', frequencia:'60', rpm:'1760', fp:'0,87', rendimento:'92,0',
+            classeIsolamento:'F', acoplamento:'Redutor', rolamentoLA:'6307', rolamentoLOA:'6307', trocaRolamento:'2025-09-18',
+            rebobinamento:'', ultimaLubrificacao:'2026-02-26', estadoIsolacao:'Monitorar', dataIsolacao:'2026-01-20',
+            resultadoIsolacao:'85 MΩ', vibracao:'4,8', temperatura:'78', ultimaPreventiva:'2026-01-25',
+            proximaPreventiva:'2026-04-05', ultimaCorretiva:'2025-09-18', ultimaInspecao:'2026-03-10',
+            alinhamento:'Monitorar', limpeza:'OK', ruido:'Moderado', ventilacao:'OK',
+            defeitoPrincipal:'Leve vibração em carga plena.',
+            causaFalha:'Possível desalinhamento ou início de desgaste no conjunto rotativo.',
+            pecasTrocadas:'Rolamento lado acoplado em 09/2025.',
+            planoAcao:'Programar análise de vibração, checagem do alinhamento e revisão na próxima parada.',
+            observacoesGerais:'Monitorar aumento de temperatura e tendência de isolação.', criadoEm:new Date().toISOString()
+          }
+        ],
+        manutencoes:[
+          {
+            id:crypto.randomUUID(), codigo:'MT-REC-001', data:'2026-02-15', tipo:'Preventiva', os:'OS-2026-0102',
+            servico:'Inspeção visual, limpeza externa, reaperto de bornes e verificação dos mancais.',
+            resultado:'Motor em boas condições, sem aquecimento anormal e sem ruído fora do padrão.',
+            responsavel:'Equipe PCM', parada:'Não', horas:'0',
+            custoMaoObra:'120,00', custoTerceiros:'0,00', totalPecas:'35,00', custoTotal:'155,00',
+            pecas:[{nome:'Graxa industrial', quantidade:'1', valorUnitario:'35,00', subtotal:'35,00'}]
+          },
+          {
+            id:crypto.randomUUID(), codigo:'MT-EXP-002', data:'2026-01-25', tipo:'Preventiva', os:'OS-2026-0089',
+            servico:'Verificação de rolamentos, reaperto mecânico, limpeza e inspeção geral.',
+            resultado:'Detectada vibração leve; manter acompanhamento e revisar alinhamento.',
+            responsavel:'Manutenção Mecânica', parada:'Sim', horas:'1.5',
+            custoMaoObra:'180,00', custoTerceiros:'0,00', totalPecas:'90,00', custoTotal:'270,00',
+            pecas:[{nome:'Graxa', quantidade:'1', valorUnitario:'20,00', subtotal:'20,00'},{nome:'Elementos de fixação', quantidade:'1', valorUnitario:'70,00', subtotal:'70,00'}]
+          }
+        ]
+      };
+      salvarDB(inicial);
+      return inicial;
+    }
+
+    function salvarDB(base=db){ localStorage.setItem(DB_KEY, JSON.stringify(base)); }
+
+    function recarregarDBDoNavegador(){
+      try{
+        const salvo = localStorage.getItem(DB_KEY);
+        if(salvo){
+          const parsed = JSON.parse(salvo);
+          if(parsed && typeof parsed === 'object'){
+            db = parsed;
+            if(!Array.isArray(db.motores)) db.motores = [];
+            if(!Array.isArray(db.manutencoes)) db.manutencoes = [];
+            return true;
+          }
+        }
+      }catch(e){
+        console.error('Falha ao recarregar banco do navegador:', e);
+      }
+      return false;
+    }
+
+    function sincronizarDashboardAoAbrir(){
+      recarregarDBDoNavegador();
+      renderTudo();
+    }
+    function valor(id){ return document.getElementById(id).value.trim(); }
+
+    function formataData(data){
+      if(!data) return '-';
+      const [ano,mes,dia] = data.split('-');
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function diasPara(data){
+      if(!data) return null;
+      const hoje = new Date(); hoje.setHours(0,0,0,0);
+      const alvo = new Date(data + 'T00:00:00');
+      return Math.ceil((alvo - hoje) / (1000*60*60*24));
+    }
+
+    function numeroSeguro(v){
+      if(v === null || v === undefined || v === '') return 0;
+      const n = parseFloat(String(v).replace(',', '.').replace(/[^\d.-]/g,''));
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function moedaBR(v){
+      return Number(v || 0).toLocaleString('pt-BR',{style:'currency', currency:'BRL'});
+    }
+
+    function textoNormalizado(v){
+      return String(v || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toLowerCase();
+    }
+
+    function statusNormalizado(v){
+      const t = textoNormalizado(v);
+      if(t === 'alerta') return 'alerta';
+      if(t === 'critico' || t === 'crítico') return 'critico';
+      if(t === 'parado') return 'parado';
+      if(t === 'operando') return 'operando';
+      return t;
+    }
+
+    function isolacaoNormalizada(v){
+      const t = textoNormalizado(v);
+      if(t === 'boa') return 'boa';
+      if(t === 'monitorar') return 'monitorar';
+      if(t === 'critica' || t === 'crítica') return 'critica';
+      return t;
+    }
+
+    function custoRegistroRobusto(m){
+      const total = numeroSeguro(m.custoTotal ?? m.custo_total ?? m.total ?? m.totalGeral);
+      if(total > 0) return total;
+
+      const pecasCampos = [
+        m.totalPecas, m.custoPecas, m.pecasTotal, m.valorPecas, m.custo_pecas
+      ];
+      const maoCampos = [
+        m.custoMaoObra, m.maoDeObra, m.custo_mao_obra, m.valorMaoObra
+      ];
+      const terceirosCampos = [
+        m.custoTerceiros, m.terceiros, m.custo_terceiros, m.valorTerceiros
+      ];
+      const simplesCampos = [
+        m.custo, m.valor, m.valorTotal, m.totalServico
+      ];
+
+      const pecas = pecasCampos.reduce((a,x)=>a + numeroSeguro(x),0);
+      const mao = maoCampos.reduce((a,x)=>a + numeroSeguro(x),0);
+      const terceiros = terceirosCampos.reduce((a,x)=>a + numeroSeguro(x),0);
+      const simples = simplesCampos.reduce((a,x)=>a + numeroSeguro(x),0);
+
+      if(pecas + mao + terceiros > 0) return pecas + mao + terceiros;
+      return simples;
+    }
+
+    function horasRegistroRobustas(m){
+      return numeroSeguro(m.horas ?? m.horasParada ?? m.horas_parada ?? m.tempoParada);
+    }
+
+    function custoMotorDireto(m){
+      return numeroSeguro(
+        m.custoAcumulado ?? m.custo_acumulado ?? m.custoTotal ?? m.custo_total ?? m.valorTotal ?? m.total
+      );
+    }
+
+    function totalCustosMotorRobusto(codigo){
+      const lista = db.manutencoes || [];
+      const totalHistorico = lista
+        .filter(x => String(x.codigo || '').trim() === String(codigo || '').trim())
+        .reduce((a,x)=>a + custoRegistroRobusto(x), 0);
+
+      if(totalHistorico > 0) return totalHistorico;
+
+      const motor = (db.motores || []).find(x => String(x.codigo || '').trim() === String(codigo || '').trim());
+      return motor ? custoMotorDireto(motor) : 0;
+    }
+
+    function statusClass(status){
+      return {'Operando':'status-operando','Alerta':'status-alerta','Crítico':'status-critico','Parado':'status-parado'}[status] || 'status-parado';
+    }
+
+    function isoClass(v){
+      return {'Boa':'iso-boa','Monitorar':'iso-monitorar','Crítica':'iso-crítica','Critica':'iso-critica'}[v] || 'iso-monitorar';
+    }
+
+    function calcularScore(m){
+      let score = 100;
+      if(m.statusAtual === 'Alerta') score -= 18;
+      if(m.statusAtual === 'Crítico') score -= 35;
+      if(m.statusAtual === 'Parado') score -= 28;
+      if(m.estadoIsolacao === 'Monitorar') score -= 15;
+      if(m.estadoIsolacao === 'Crítica') score -= 28;
+      const vib = numeroSeguro(m.vibracao);
+      if(vib > 4.5) score -= 18; else if(vib > 2.8) score -= 8;
+      const temp = numeroSeguro(m.temperatura);
+      if(temp >= 85) score -= 20; else if(temp >= 70) score -= 8;
+      const d = diasPara(m.proximaPreventiva);
+      if(d !== null && d < 0) score -= 15;
+      else if(d !== null && d <= 15) score -= 8;
+      return Math.max(0, Math.min(100, score));
+    }
+
+    function corSaude(score){
+      if(score >= 80) return '#0f8a5f';
+      if(score >= 60) return '#78a83b';
+      if(score >= 40) return '#d3a61c';
+      if(score >= 20) return '#df6b1d';
+      return '#b42318';
+    }
+
+    function healthBarHTML(score){
+      return `
+        <div class="health-wrap">
+          <div class="health-label">
+            <span>Barra de saúde</span>
+            <span>${score}/100</span>
+          </div>
+          <div class="health-track">
+            <div class="health-fill" style="width:${score}%; background:${corSaude(score)};"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function totalCustosMotor(codigo){
+      return totalCustosMotorRobusto(codigo);
+    }
+
+    function showPage(page, btn=null){
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      document.getElementById('page-' + page).classList.add('active');
+      document.querySelectorAll('.menu button').forEach(b=>b.classList.remove('active'));
+      if(btn) btn.classList.add('active');
+      else {
+        const found = document.querySelector(`.menu button[data-page="${page}"]`);
+        if(found) found.classList.add('active');
+      }
+
+      document.querySelectorAll('.page-actions').forEach(a=>a.classList.add('hidden'));
+      const actionBox = document.getElementById('actions-' + page);
+      if(actionBox) actionBox.classList.remove('hidden');
+
+      const titles = {
+        dashboard:['Dashboard geral','Visão executiva dos motores cadastrados, condição técnica, custos e necessidades de manutenção.'],
+        cadastro:['Cadastro técnico','Cadastro técnico completo do motor elétrico e da condição operacional.'],
+        historico:['Histórico do motor','Linha do tempo das intervenções, custos, peças e resumo consolidado do equipamento.'],
+        relatorio:['Relatório individual','Ficha técnica completa, histórico e custos do motor selecionado pronta para impressão.'],
+        saude:['Como a saúde é calculada','Explicação didática para o usuário entender como a nota de saúde do motor funciona.'],
+        manual:['Manual do sistema','Guia rápido para uso do sistema'],
+        'menu-manual':['Manual','Central de manuais do sistema']
+      };
+      document.getElementById('pageTitle').textContent = titles[page][0];
+      document.getElementById('pageSubtitle').textContent = titles[page][1];
+
+      if(page === 'dashboard'){
+        sincronizarDashboardAoAbrir();
+      }
+    }
+
+    function renderKPIs(){
+      const total = db.motores.length;
+      const operando = db.motores.filter(m=>m.statusAtual==='Operando').length;
+      const criticos = db.motores.filter(m=>['Alerta','Crítico'].includes(m.statusAtual)).length;
+      const custoTotal = db.manutencoes.reduce((a,m)=>a + numeroSeguro(m.custoTotal),0);
+      document.getElementById('kpis').innerHTML = `
+        <div class="card kpi"><div class="label">Motores cadastrados</div><div class="valor">${total}</div><div class="sub">Base técnica total do sistema</div></div>
+        <div class="card kpi"><div class="label">Motores operando</div><div class="valor">${operando}</div><div class="sub">Equipamentos em condição normal</div></div>
+        <div class="card kpi"><div class="label">Alerta / crítico</div><div class="valor">${criticos}</div><div class="sub">Precisam acompanhamento ou ação</div></div>
+        <div class="card kpi"><div class="label">Custo acumulado</div><div class="valor">${moedaBR(custoTotal)}</div><div class="sub">Soma de todas as intervenções</div></div>
+      `;
+    }
+
+    function renderAlertas(){
+      const box = document.getElementById('alertasBox');
+      if(!box) return;
+
+      const alertas = (db.motores || []).map(m=>{
+        const d = diasPara(m.proximaPreventiva);
+        const score = calcularScore(m);
+        let motivo = [];
+
+        const status = statusNormalizado(m.statusAtual);
+        const isolacao = isolacaoNormalizada(m.estadoIsolacao);
+
+        if(['alerta','critico','parado'].includes(status)){
+          motivo.push(`status ${status === 'critico' ? 'crítico' : status}`);
+        }
+
+        if(isolacao && isolacao !== 'boa'){
+          motivo.push(`isolação ${isolacao === 'critica' ? 'crítica' : isolacao}`);
+        }
+
+        if(d !== null && d < 0) motivo.push('preventiva vencida');
+        else if(d !== null && d <= 15) motivo.push('preventiva próxima');
+
+        if(numeroSeguro(m.vibracao) > 4.5) motivo.push('vibração alta');
+        if(numeroSeguro(m.temperatura) >= 85) motivo.push('temperatura alta');
+
+        return {motor:m, score, motivo:motivo.join(', ')};
+      }).filter(x=>x.motivo || x.score < 75).sort((a,b)=>a.score-b.score).slice(0,6);
+
+      box.innerHTML = alertas.length
+        ? alertas.map(x=>`
+            <div class="warning-item">
+              <strong>${x.motor.codigo || '-'}</strong> — ${x.motor.descricao || '-'}<br>
+              <span class="muted">${x.motor.setor || '-'} • score ${x.score}</span><br>
+              <span>${x.motivo || 'monitoramento geral'}</span>
+            </div>
+          `).join('')
+        : '<div class="warning-item">Nenhum alerta crítico no momento.</div>';
+    }
+
+    function renderResumoCustos(){
+      const lista = db.manutencoes || [];
+
+      const custoTotalHistorico = lista.reduce((a,m)=>a + custoRegistroRobusto(m),0);
+      const custoTotalMotores = (db.motores || []).reduce((a,m)=>a + custoMotorDireto(m),0);
+      const custoTotal = custoTotalHistorico > 0 ? custoTotalHistorico : custoTotalMotores;
+
+      const horasParada = lista.reduce((a,m)=>a + horasRegistroRobustas(m),0);
+
+      const ranking = (db.motores || []).map(m=>({
+        codigo:m.codigo,
+        descricao:m.descricao,
+        total: totalCustosMotorRobusto(m.codigo)
+      })).sort((a,b)=>b.total-a.total);
+
+      const custoTotalBox = document.getElementById('custoTotalBox');
+      const horasParadaBox = document.getElementById('horasParadaBox');
+      const motorMaisCaroBox = document.getElementById('motorMaisCaroBox');
+      const rankingCustos = document.getElementById('rankingCustos');
+      const custosPorTipo = document.getElementById('custosPorTipo');
+
+      if(custoTotalBox) custoTotalBox.textContent = moedaBR(custoTotal);
+      if(horasParadaBox) horasParadaBox.textContent = horasParada.toLocaleString('pt-BR');
+      if(motorMaisCaroBox) motorMaisCaroBox.textContent = ranking.length && ranking[0].total > 0 ? `${ranking[0].codigo} — ${moedaBR(ranking[0].total)}` : '-';
+
+      if(rankingCustos){
+        rankingCustos.innerHTML = ranking.length && ranking.some(x=>x.total>0)
+          ? ranking.slice(0,6).map(x=>`
+              <div class="warning-item">
+                <strong>${x.codigo}</strong><br>
+                <span class="muted">${x.descricao || '-'}</span><br>
+                <span>${moedaBR(x.total)}</span>
+              </div>
+            `).join('')
+          : '<div class="warning-item">Sem custos registrados.</div>';
+      }
+
+      const porTipoMap = {};
+      lista.forEach(m=>{
+        const tipo = m.tipo || m.categoria || 'Sem tipo';
+        porTipoMap[tipo] = (porTipoMap[tipo] || 0) + custoRegistroRobusto(m);
+      });
+      const porTipo = Object.entries(porTipoMap).sort((a,b)=>b[1]-a[1]);
+
+      if(custosPorTipo){
+        custosPorTipo.innerHTML = porTipo.length
+          ? porTipo.map(([tipo,total])=>`
+              <div class="warning-item"><strong>${tipo}</strong><br><span>${moedaBR(total)}</span></div>
+            `).join('')
+          : '<div class="warning-item">Sem custos por tipo registrados.</div>';
+      }
+    }
+
+    function motoresFiltrados(){
+      const busca = valor('busca').toLowerCase();
+      const filtroStatus = document.getElementById('filtroStatus').value;
+      const filtroSetor = valor('filtroSetor').toLowerCase();
+      const filtroIsolacao = document.getElementById('filtroIsolacao').value;
+      return db.motores.filter(m=>{
+        const alvo = [m.codigo,m.tag,m.setor,m.descricao,m.fabricante,m.modelo,m.localInstalacao].join(' ').toLowerCase();
+        const okBusca = !busca || alvo.includes(busca);
+        const okStatus = !filtroStatus || m.statusAtual === filtroStatus;
+        const okSetor = !filtroSetor || (m.setor || '').toLowerCase().includes(filtroSetor);
+        const okIso = !filtroIsolacao || m.estadoIsolacao === filtroIsolacao;
+        return okBusca && okStatus && okSetor && okIso;
+      });
+    }
+
+    function renderMotores(){
+      const lista = motoresFiltrados();
+      const el = document.getElementById('listaMotores');
+      if(!lista.length){ el.innerHTML = '<div class="card">Nenhum motor encontrado com os filtros atuais.</div>'; return; }
+
+      el.innerHTML = lista.map(m=>{
+        const prazo = diasPara(m.proximaPreventiva);
+        const prazoTxt = prazo === null ? 'Sem data definida' : prazo < 0 ? `Vencida há ${Math.abs(prazo)} dia(s)` : `Faltam ${prazo} dia(s)`;
+        const score = calcularScore(m);
+        const custo = totalCustosMotor(m.codigo);
+        return `
+          <div class="motor-card">
+            <div style="display:flex; justify-content:space-between; gap:10px; align-items:start;">
+              <div><h4>${m.codigo}</h4><p><strong>${m.descricao || '-'}</strong></p></div>
+              <span class="status ${statusClass(m.statusAtual)}">${m.statusAtual}</span>
+            </div>
+            <div class="score-box">
+              <div><div class="muted">Saúde do motor</div><div class="score-big">${score}</div></div>
+              <div style="text-align:right;">
+                <span class="pill ${isoClass(m.estadoIsolacao)}">${m.estadoIsolacao || '-'}</span><br><br>
+                <span class="pill pill-roxo">${m.criticidade || '-'}</span>
+              </div>
+            </div>
+            ${healthBarHTML(score)}
+            <p><strong>TAG:</strong> ${m.tag || '-'}</p>
+            <p><strong>Setor:</strong> ${m.setor || '-'}</p>
+            <p><strong>Fabricante/Modelo:</strong> ${(m.fabricante||'-')} / ${(m.modelo||'-')}</p>
+            <p><strong>Potência:</strong> ${m.potenciaCv || '-'} CV / ${m.potenciaKw || '-'} kW</p>
+            <p><strong>Placa:</strong> ${m.tensao || '-'} V • ${m.corrente || '-'} A • ${m.rpm || '-'} RPM</p>
+            <p><strong>Monitoramento:</strong> Vib. ${m.vibracao || '-'} mm/s • Temp. ${m.temperatura || '-'} °C</p>
+            <p><strong>Custo acumulado:</strong> ${moedaBR(custo)}</p>
+            <div class="mini-grid">
+              <div class="mini-box"><strong>Próxima preventiva</strong>${m.proximaPreventiva ? formataData(m.proximaPreventiva) : '-'}</div>
+              <div class="mini-box"><strong>Prazo</strong>${prazoTxt}</div>
+              <div class="mini-box"><strong>Rolamentos</strong>LA ${m.rolamentoLA || '-'}<br>LOA ${m.rolamentoLOA || '-'}</div>
+              <div class="mini-box"><strong>Local</strong>${m.localInstalacao || '-'}</div>
+            </div>
+            <div class="acoes no-print">
+              <button class="btn-cinza" onclick="editarMotor('${m.id}')">Editar</button>
+              <button class="btn-cinza" onclick="abrirHistorico('${m.codigo}')">Histórico</button>
+              <button class="btn-azul" onclick="abrirRelatorio('${m.codigo}')">Relatório</button>
+              <button class="btn-vermelho" onclick="excluirMotor('${m.id}')">Excluir</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderTabelaManutencoes(){
+      const linhas = [...db.manutencoes].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+      document.getElementById('tabelaManutencoes').innerHTML = linhas.map(r=>`
+        <tr>
+          <td>${formataData(r.data)}</td>
+          <td>${r.codigo}</td>
+          <td>${r.tipo}</td>
+          <td>${r.os || '-'}</td>
+          <td>${r.servico || '-'}</td>
+          <td>${r.responsavel || '-'}</td>
+          <td>${r.parada === 'Sim' ? 'Sim (' + (r.horas || '0') + ' h)' : 'Não'}</td>
+          <td>${moedaBR(numeroSeguro(r.totalPecas))}</td>
+          <td>${moedaBR(numeroSeguro(r.custoMaoObra))}</td>
+          <td>${moedaBR(numeroSeguro(r.custoTerceiros))}</td>
+          <td>${moedaBR(numeroSeguro(r.custoTotal))}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderHistoricoMotor(){
+      const codigo = valor('historicoCodigo').toUpperCase();
+      const resumo = document.getElementById('historicoResumo');
+      const timeline = document.getElementById('historicoTimeline');
+      const motor = db.motores.find(m=>m.codigo===codigo);
+
+      if(!codigo){ resumo.innerHTML = ''; timeline.innerHTML = '<div class="card">Informe um código para visualizar o histórico.</div>'; return; }
+      if(!motor){ resumo.innerHTML = ''; timeline.innerHTML = '<div class="card">Motor não encontrado.</div>'; return; }
+
+      const registros = db.manutencoes.filter(m=>m.codigo===codigo).sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+      const custoTotal = registros.reduce((a,r)=>a + numeroSeguro(r.custoTotal), 0);
+      const horasTotais = registros.reduce((a,r)=>a + numeroSeguro(r.horas), 0);
+
+      resumo.innerHTML = `
+        <div class="mini-box"><strong>Descrição</strong>${motor.descricao || '-'}</div>
+        <div class="mini-box"><strong>Status</strong><span class="status ${statusClass(motor.statusAtual)}">${motor.statusAtual}</span></div>
+        <div class="mini-box"><strong>Saúde do motor</strong>${calcularScore(motor)}${healthBarHTML(calcularScore(motor))}</div>
+        <div class="mini-box"><strong>Setor</strong>${motor.setor || '-'}</div>
+        <div class="mini-box"><strong>Custo acumulado</strong>${moedaBR(custoTotal)}</div>
+        <div class="mini-box"><strong>Horas de parada</strong>${horasTotais.toLocaleString('pt-BR')}</div>
+      `;
+
+      if(!registros.length){ timeline.innerHTML = '<div class="timeline-item"><h4>Sem histórico registrado</h4><p>Nenhuma manutenção cadastrada para este motor.</p></div>'; return; }
+
+      timeline.innerHTML = registros.map(r=>{
+        const pecasTxt = (r.pecas || []).length
+          ? r.pecas.map(p=>`${p.nome} (${p.quantidade}x)`).join(', ')
+          : '-';
+        return `
+          <div class="timeline-item">
+            <h4>${formataData(r.data)} — ${r.tipo}</h4>
+            <p><strong>OS:</strong> ${r.os || '-'}</p>
+            <p><strong>Serviço:</strong> ${r.servico || '-'}</p>
+            <p><strong>Resultado:</strong> ${r.resultado || '-'}</p>
+            <p><strong>Responsável:</strong> ${r.responsavel || '-'}</p>
+            <p><strong>Parada:</strong> ${r.parada || '-'} ${r.parada==='Sim' ? '('+(r.horas||'0')+' h)' : ''}</p>
+            <p><strong>Peças:</strong> ${pecasTxt}</p>
+            <p><strong>Custos:</strong> Peças ${moedaBR(numeroSeguro(r.totalPecas))} • M.O. ${moedaBR(numeroSeguro(r.custoMaoObra))} • Terceiros ${moedaBR(numeroSeguro(r.custoTerceiros))} • Total ${moedaBR(numeroSeguro(r.custoTotal))}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function gerarRelatorio(){
+      const codigo = valor('relatorioCodigo').toUpperCase();
+      const area = document.getElementById('relatorioArea');
+      const motor = db.motores.find(m=>m.codigo===codigo);
+
+      if(!codigo){ area.innerHTML = `<div class="report-header"><div class="report-title"><h3>Relatório individual do motor</h3><p>Informe um código para carregar o relatório.</p></div></div>`; return; }
+      if(!motor){ area.innerHTML = `<div class="report-header"><div class="report-title"><h3>Relatório individual do motor</h3><p>Código não encontrado.</p></div></div>`; return; }
+
+      const historico = db.manutencoes.filter(h=>h.codigo===codigo).sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+      const custoTotal = historico.reduce((a,h)=>a + numeroSeguro(h.custoTotal), 0);
+      const horasTotais = historico.reduce((a,h)=>a + numeroSeguro(h.horas), 0);
+
+      area.innerHTML = `
+        <div class="report-header">
+          <div class="report-title">
+            <h3>Relatório individual do motor</h3>
+            <p><strong>Código:</strong> ${motor.codigo} &nbsp;&nbsp; <strong>TAG:</strong> ${motor.tag || '-'} &nbsp;&nbsp; <strong>Status:</strong> ${motor.statusAtual}</p>
+          </div>
+          <div class="muted">Emitido em: ${new Date().toLocaleDateString('pt-BR')}</div>
+        </div>
+
+        <div class="score-box">
+          <div>
+            <div class="muted">Índice de saúde do motor</div>
+            <div class="score-big">${calcularScore(motor)}</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="pill ${isoClass(motor.estadoIsolacao)}">${motor.estadoIsolacao || '-'}</span><br><br>
+            <span class="pill pill-roxo">Custo acumulado: ${moedaBR(custoTotal)}</span>
+          </div>
+        </div>
+        ${healthBarHTML(calcularScore(motor))}
+
+        <div class="report-grid">
+          <div class="report-box">
+            <h4>Identificação</h4>
+            ${reportRow('Descrição', motor.descricao)}
+            ${reportRow('Setor', motor.setor)}
+            ${reportRow('Local de instalação', motor.localInstalacao)}
+            ${reportRow('Data de instalação', formataData(motor.dataInstalacao))}
+            ${reportRow('Criticidade operacional', motor.criticidade)}
+            ${reportRow('Status atual', motor.statusAtual)}
+          </div>
+
+          <div class="report-box">
+            <h4>Dados de placa</h4>
+            ${reportRow('Fabricante', motor.fabricante)}
+            ${reportRow('Modelo', motor.modelo)}
+            ${reportRow('Carcaça', motor.carcaca)}
+            ${reportRow('IP', motor.ip)}
+            ${reportRow('Regime', motor.regime)}
+            ${reportRow('Potência', `${motor.potenciaCv || '-'} CV / ${motor.potenciaKw || '-'} kW`)}
+            ${reportRow('Tensão', motor.tensao)}
+            ${reportRow('Corrente', motor.corrente)}
+            ${reportRow('Frequência', motor.frequencia)}
+            ${reportRow('Rotação', motor.rpm)}
+            ${reportRow('Fator de potência', motor.fp)}
+            ${reportRow('Rendimento', motor.rendimento)}
+          </div>
+
+          <div class="report-box">
+            <h4>Condição e monitoramento</h4>
+            ${reportRow('Classe de isolamento', motor.classeIsolamento)}
+            ${reportRow('Estado da isolação', motor.estadoIsolacao)}
+            ${reportRow('Último teste de isolação', formataData(motor.dataIsolacao))}
+            ${reportRow('Resultado da isolação', motor.resultadoIsolacao)}
+            ${reportRow('Vibração', `${motor.vibracao || '-'} mm/s`)}
+            ${reportRow('Temperatura', `${motor.temperatura || '-'} °C`)}
+            ${reportRow('Alinhamento', motor.alinhamento)}
+            ${reportRow('Limpeza', motor.limpeza)}
+            ${reportRow('Ruído', motor.ruido)}
+            ${reportRow('Ventilação', motor.ventilacao)}
+          </div>
+
+          <div class="report-box">
+            <h4>Manutenção</h4>
+            ${reportRow('Acoplamento', motor.acoplamento)}
+            ${reportRow('Rolamento LA', motor.rolamentoLA)}
+            ${reportRow('Rolamento LOA', motor.rolamentoLOA)}
+            ${reportRow('Última troca de rolamentos', formataData(motor.trocaRolamento))}
+            ${reportRow('Data de rebobinamento', formataData(motor.rebobinamento))}
+            ${reportRow('Última lubrificação', formataData(motor.ultimaLubrificacao))}
+            ${reportRow('Última preventiva', formataData(motor.ultimaPreventiva))}
+            ${reportRow('Próxima preventiva', formataData(motor.proximaPreventiva))}
+            ${reportRow('Última corretiva', formataData(motor.ultimaCorretiva))}
+            ${reportRow('Última inspeção', formataData(motor.ultimaInspecao))}
+          </div>
+
+          <div class="report-box">
+            <h4>Análise técnica</h4>
+            ${reportRow('Defeito principal / anomalia', motor.defeitoPrincipal)}
+            ${reportRow('Causa provável da falha', motor.causaFalha)}
+            ${reportRow('Peças trocadas', motor.pecasTrocadas)}
+            ${reportRow('Plano de ação', motor.planoAcao)}
+            ${reportRow('Observações gerais', motor.observacoesGerais)}
+          </div>
+
+          <div class="report-box">
+            <h4>Resumo executivo</h4>
+            ${reportRow('Saúde do motor', calcularScore(motor))}
+            ${reportRow('Quantidade de intervenções', String(historico.length))}
+            ${reportRow('Custo acumulado', moedaBR(custoTotal))}
+            ${reportRow('Horas totais de parada', horasTotais.toLocaleString('pt-BR'))}
+            ${reportRow('Última intervenção', historico.length ? formataData(historico[0].data) : '-')}
+          </div>
+        </div>
+
+        <div class="report-box" style="margin-top:14px;">
+          <h4>Histórico de intervenções</h4>
+          <div class="historico-blocos">
+            ${historico.length ? historico.map(h=>`
+              <div class="historico-item">
+                <table class="historico-tabela">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Tipo</th>
+                      <th>OS</th>
+                      <th>Responsável</th>
+                      <th>Parada</th>
+                      <th>Peças</th>
+                      <th>M.O.</th>
+                      <th>Terceiros</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="historico-topo">
+                      <td>${formataData(h.data)}</td>
+                      <td>${h.tipo || '-'}</td>
+                      <td>${h.os || '-'}</td>
+                      <td>${h.responsavel || '-'}</td>
+                      <td>${h.parada==='Sim' ? 'Sim ('+(h.horas||'0')+' h)' : 'Não'}</td>
+                      <td>${moedaBR(numeroSeguro(h.totalPecas))}</td>
+                      <td>${moedaBR(numeroSeguro(h.custoMaoObra))}</td>
+                      <td>${moedaBR(numeroSeguro(h.custoTerceiros))}</td>
+                      <td>${moedaBR(numeroSeguro(h.custoTotal))}</td>
+                    </tr>
+                    <tr class="historico-subhead">
+                      <th colspan="4">Serviço executado</th>
+                      <th colspan="5">Resultado</th>
+                    </tr>
+                    <tr class="historico-textos">
+                      <td colspan="4" class="texto-servico">${h.servico || '-'}</td>
+                      <td colspan="5" class="texto-resultado">${h.resultado || '-'}</td>
+                    </tr>
+                    ${(h.pecas || []).length ? `<tr class="historico-pecas"><td colspan="9"><strong>Peças detalhadas:</strong> ${(h.pecas || []).map(p=>`${p.nome} (${p.quantidade}x • ${moedaBR(numeroSeguro(p.valorUnitario))} = ${moedaBR(numeroSeguro(p.subtotal))})`).join(' | ')}</td></tr>` : ''}
+                  </tbody>
+                </table>
+              </div>
+            `).join('') : `<div class="historico-item"><table class="historico-tabela"><tbody><tr><td>Nenhuma intervenção registrada.</td></tr></tbody></table></div>`}
+          </div>
+        </div>
+      `;
+    }
+
+    function reportRow(label, value){ return `<div class="report-row"><strong>${label}</strong><span>${value || '-'}</span></div>`; }
+
+    function adicionarLinhaPeca(dados={nome:'', quantidade:'1', valorUnitario:'', subtotal:'0,00'}){
+      pecasForm.push(dados);
+      renderLinhasPecas();
+    }
+
+    function removerLinhaPeca(idx){
+      pecasForm.splice(idx,1);
+      renderLinhasPecas();
+    }
+
+    function atualizarPeca(idx, campo, valorNovo){
+      pecasForm[idx][campo] = valorNovo;
+      const q = numeroSeguro(pecasForm[idx].quantidade);
+      const vu = numeroSeguro(pecasForm[idx].valorUnitario);
+      pecasForm[idx].subtotal = (q * vu).toFixed(2).replace('.',',');
+      renderLinhasPecas();
+    }
+
+    function renderLinhasPecas(){
+      const el = document.getElementById('listaPecasForm');
+      el.innerHTML = pecasForm.map((p,idx)=>`
+        <div class="partes-linha">
+          <div class="field"><input value="${p.nome || ''}" placeholder="Nome da peça" onchange="atualizarPeca(${idx}, 'nome', this.value)"></div>
+          <div class="field"><input value="${p.quantidade || ''}" placeholder="Qtde" onchange=="atualizarPeca(${idx}, 'quantidade', this.value)"></div>
+          <div class="field"><input value="${p.valorUnitario || ''}" placeholder="Valor unitário" onchange="atualizarPeca(${idx}, 'valorUnitario', this.value)"></div>
+          <div class="field"><input value="${p.subtotal || '0,00'}" readonly></div>
+          <div class="field"><button type="button" class="btn-vermelho no-print" onclick="removerLinhaPeca(${idx})">Remover</button></div>
+        </div>
+      `).join('');
+      recalcularCustosForm();
+    }
+
+    function recalcularCustosForm(){
+      const totalPecas = pecasForm.reduce((a,p)=>a + numeroSeguro(p.subtotal),0);
+      const totalMO = numeroSeguro(valor('manutCustoMaoObra'));
+      const totalTer = numeroSeguro(valor('manutCustoTerceiros'));
+      const total = totalPecas + totalMO + totalTer;
+      document.getElementById('manutTotalPecas').value = totalPecas.toFixed(2).replace('.',',');
+      document.getElementById('manutTotalMaoObra').value = totalMO.toFixed(2).replace('.',',');
+      document.getElementById('manutTotalTerceiros').value = totalTer.toFixed(2).replace('.',',');
+      document.getElementById('manutCustoTotal').value = total.toFixed(2).replace('.',',');
+    }
+
+    document.getElementById('manutCustoMaoObra').addEventListener('input', recalcularCustosForm);
+    document.getElementById('manutCustoTerceiros').addEventListener('input', recalcularCustosForm);
+
+    document.getElementById('motorForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const motor = {
+        id: editandoId || crypto.randomUUID(),
+        codigo: valor('codigo').toUpperCase(), tag: valor('tag').toUpperCase(), statusAtual: valor('statusAtual'),
+        criticidade: valor('criticidade'), setor: valor('setor'), descricao: valor('descricao'),
+        localInstalacao: valor('localInstalacao'), dataInstalacao: valor('dataInstalacao'), fabricante: valor('fabricante'),
+        modelo: valor('modelo'), carcaca: valor('carcaca'), ip: valor('ip'), regime: valor('regime'),
+        potenciaCv: valor('potenciaCv'), potenciaKw: valor('potenciaKw'), tensao: valor('tensao'), corrente: valor('corrente'),
+        frequencia: valor('frequencia'), rpm: valor('rpm'), fp: valor('fp'), rendimento: valor('rendimento'),
+        classeIsolamento: valor('classeIsolamento'), acoplamento: valor('acoplamento'), rolamentoLA: valor('rolamentoLA'),
+        rolamentoLOA: valor('rolamentoLOA'), trocaRolamento: valor('trocaRolamento'), rebobinamento: valor('rebobinamento'),
+        ultimaLubrificacao: valor('ultimaLubrificacao'), estadoIsolacao: valor('estadoIsolacao'), dataIsolacao: valor('dataIsolacao'),
+        resultadoIsolacao: valor('resultadoIsolacao'), vibracao: valor('vibracao'), temperatura: valor('temperatura'),
+        ultimaPreventiva: valor('ultimaPreventiva'), proximaPreventiva: valor('proximaPreventiva'), ultimaCorretiva: valor('ultimaCorretiva'),
+        ultimaInspecao: valor('ultimaInspecao'), alinhamento: valor('alinhamento'), limpeza: valor('limpeza'),
+        ruido: valor('ruido'), ventilacao: valor('ventilacao'), defeitoPrincipal: valor('defeitoPrincipal'),
+        causaFalha: valor('causaFalha'), pecasTrocadas: valor('pecasTrocadas'), planoAcao: valor('planoAcao'),
+        observacoesGerais: valor('observacoesGerais'), criadoEm: new Date().toISOString()
+      };
+      const duplicado = db.motores.some(m => m.codigo === motor.codigo && m.id !== motor.id);
+      if(duplicado){ alert('Já existe um motor com esse código.'); return; }
+      if(editandoId){
+        const idx = db.motores.findIndex(m=>m.id===editandoId);
+        db.motores[idx] = motor;
+      } else db.motores.push(motor);
+
+      salvarDB(); limparFormulario(); renderTudo(); showPage('dashboard'); alert('Motor salvo com sucesso.');
+    });
+
+    document.getElementById('manutForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const codigo = valor('manutCodigo').toUpperCase();
+      const motor = db.motores.find(m=>m.codigo===codigo);
+      if(!motor){ alert('Cadastre primeiro o motor com esse código.'); return; }
+
+      recalcularCustosForm();
+      const reg = {
+        id: crypto.randomUUID(), codigo, data: valor('manutData'), tipo: valor('manutTipo'), os: valor('manutOS'),
+        servico: valor('manutServico'), resultado: valor('manutResultado'), responsavel: valor('manutResponsavel'),
+        parada: valor('manutParada'), horas: valor('manutHoras'), custoMaoObra: valor('manutTotalMaoObra'),
+        custoTerceiros: valor('manutTotalTerceiros'), totalPecas: valor('manutTotalPecas'), custoTotal: valor('manutCustoTotal'),
+        pecas: pecasForm.filter(p=>p.nome && numeroSeguro(p.quantidade) > 0)
+      };
+
+      db.manutencoes.push(reg);
+      if(reg.tipo === 'Preventiva') motor.ultimaPreventiva = reg.data;
+      if(reg.tipo === 'Corretiva') motor.ultimaCorretiva = reg.data;
+      if(reg.tipo === 'Inspeção') motor.ultimaInspecao = reg.data;
+      if(reg.tipo === 'Troca de rolamentos') motor.trocaRolamento = reg.data;
+      if(reg.tipo === 'Lubrificação') motor.ultimaLubrificacao = reg.data;
+      if(reg.tipo === 'Teste de isolação') motor.dataIsolacao = reg.data;
+      if(reg.tipo === 'Rebobinamento') motor.rebobinamento = reg.data;
+
+      salvarDB();
+      this.reset();
+      document.getElementById('manutData').value = new Date().toISOString().slice(0,10);
+      pecasForm = [];
+      renderLinhasPecas();
+      renderTudo();
+      document.getElementById('historicoCodigo').value = codigo;
+      renderHistoricoMotor();
+      alert('Manutenção registrada com sucesso.');
+    });
+
+    function editarMotor(id){
+      const m = db.motores.find(x=>x.id===id);
+      if(!m) return;
+      editandoId = id;
+      document.getElementById('formTitle').textContent = 'Editar motor cadastrado';
+      [
+        'codigo','tag','statusAtual','criticidade','setor','descricao','localInstalacao','dataInstalacao','fabricante',
+        'modelo','carcaca','ip','regime','potenciaCv','potenciaKw','tensao','corrente','frequencia','rpm','fp','rendimento',
+        'classeIsolamento','acoplamento','rolamentoLA','rolamentoLOA','trocaRolamento','rebobinamento','ultimaLubrificacao',
+        'estadoIsolacao','dataIsolacao','resultadoIsolacao','vibracao','temperatura','ultimaPreventiva','proximaPreventiva',
+        'ultimaCorretiva','ultimaInspecao','alinhamento','limpeza','ruido','ventilacao','defeitoPrincipal','causaFalha',
+        'pecasTrocadas','planoAcao','observacoesGerais'
+      ].forEach(c => document.getElementById(c).value = m[c] || '');
+      showPage('cadastro');
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function limparFormulario(){
+      editandoId = null;
+      document.getElementById('formTitle').textContent = 'Cadastro técnico completo do motor';
+      document.getElementById('motorForm').reset();
+      document.getElementById('statusAtual').value = 'Operando';
+      document.getElementById('criticidade').value = 'Baixa';
+      document.getElementById('estadoIsolacao').value = 'Boa';
+      document.getElementById('alinhamento').value = 'OK';
+      document.getElementById('limpeza').value = 'OK';
+      document.getElementById('ruido').value = 'Normal';
+      document.getElementById('ventilacao').value = 'OK';
+    }
+
+    function excluirMotor(id){
+      const m = db.motores.find(x=>x.id===id);
+      if(!m) return;
+      if(!confirm(`Excluir o motor ${m.codigo}?`)) return;
+      db.motores = db.motores.filter(x=>x.id!==id);
+      db.manutencoes = db.manutencoes.filter(x=>x.codigo!==m.codigo);
+      salvarDB(); renderTudo();
+    }
+
+    function abrirHistorico(codigo){
+      document.getElementById('historicoCodigo').value = codigo;
+      renderHistoricoMotor();
+      showPage('historico');
+    }
+
+    function abrirRelatorio(codigo){
+      document.getElementById('relatorioCodigo').value = codigo;
+      gerarRelatorio();
+      showPage('relatorio');
+    }
+
+    function exportarJSON(){
+      const blob = new Blob([JSON.stringify(db, null, 2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'banco_motores_eletricos_nivel_industria.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    document.getElementById('importFile').addEventListener('change', function(e){
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(){
+        try{
+          const data = JSON.parse(reader.result);
+          if(!data.motores || !data.manutencoes) throw new Error('Inválido');
+          localStorage.setItem(DB_KEY, JSON.stringify(data));
+          location.reload();
+        } catch(err){ alert('Arquivo inválido para importação.'); }
+      };
+      reader.readAsText(file);
+    });
+
+    document.getElementById('busca').addEventListener('input', renderMotores);
+    document.getElementById('filtroStatus').addEventListener('change', renderMotores);
+    document.getElementById('filtroSetor').addEventListener('input', renderMotores);
+    document.getElementById('filtroIsolacao').addEventListener('change', renderMotores);
+
+    function renderTudo(){
+      recarregarDBDoNavegador();
+      renderKPIs();
+      renderAlertas();
+      renderResumoCustos();
+      renderMotores();
+      renderTabelaManutencoes();
+      if(document.getElementById('historicoCodigo') && document.getElementById('historicoCodigo').value) renderHistoricoMotor();
+      if(document.getElementById('relatorioCodigo') && document.getElementById('relatorioCodigo').value) gerarRelatorio();
+    }
+
+    document.getElementById('manutData').value = new Date().toISOString().slice(0,10);
+    adicionarLinhaPeca();
+
+    document.addEventListener('DOMContentLoaded', function(){
+      sincronizarDashboardAoAbrir();
+    });
+
+    window.addEventListener('load', function(){
+      sincronizarDashboardAoAbrir();
+    });
+
+    window.addEventListener('focus', function(){
+      sincronizarDashboardAoAbrir();
+    });
+
+    document.addEventListener('visibilitychange', function(){
+      if(!document.hidden){
+        sincronizarDashboardAoAbrir();
+      }
+    });
+  </script>
+
+<script id="patch-dashboard-final">
+(function(){
+  function lerNumero(v){
+    if(v === null || v === undefined || v === '') return 0;
+    const n = parseFloat(String(v).replace(',', '.').replace(/[^\d.-]/g,''));
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function moeda(v){
+    return Number(v || 0).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+  }
+
+  function norm(v){
+    return String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+  }
+
+  function pegarDB(){
+    try{
+      const key = 'motores_eletricos_db_industrial_v1';
+      const raw = localStorage.getItem(key);
+      if(raw){
+        const db = JSON.parse(raw);
+        if(db && typeof db === 'object'){
+          if(!Array.isArray(db.motores)) db.motores = [];
+          if(!Array.isArray(db.manutencoes)) db.manutencoes = [];
+          return db;
+        }
+      }
+    }catch(e){
+      console.error('Erro lendo banco salvo:', e);
+    }
+    return {motores:[], manutencoes:[]};
+  }
+
+  function custoRegistro(m){
+    const total = lerNumero(m?.custoTotal ?? m?.custo_total ?? m?.total ?? m?.valorTotal);
+    if(total > 0) return total;
+    return (
+      lerNumero(m?.totalPecas ?? m?.custoPecas ?? m?.pecasTotal) +
+      lerNumero(m?.custoMaoObra ?? m?.maoDeObra ?? m?.valorMaoObra) +
+      lerNumero(m?.custoTerceiros ?? m?.terceiros ?? m?.valorTerceiros) +
+      lerNumero(m?.custo ?? m?.valor)
+    );
+  }
+
+  function horasRegistro(m){
+    return lerNumero(m?.horas ?? m?.horasParada ?? m?.horas_parada ?? m?.tempoParada);
+  }
+
+  function scoreMotor(m){
+    let score = 100;
+    const status = norm(m?.statusAtual);
+    const iso = norm(m?.estadoIsolacao);
+    const vib = lerNumero(m?.vibracao);
+    const temp = lerNumero(m?.temperatura);
+
+    if(status === 'alerta') score -= 18;
+    if(status === 'critico') score -= 35;
+    if(status === 'parado') score -= 28;
+
+    if(iso === 'monitorar') score -= 15;
+    if(iso === 'critica') score -= 28;
+
+    if(vib > 4.5) score -= 18;
+    else if(vib > 2.8) score -= 8;
+
+    if(temp >= 85) score -= 20;
+    else if(temp >= 70) score -= 8;
+
+    if(m?.proximaPreventiva){
+      const hoje = new Date();
+      hoje.setHours(0,0,0,0);
+      const alvo = new Date(String(m.proximaPreventiva) + 'T00:00:00');
+      const d = Math.ceil((alvo - hoje)/(1000*60*60*24));
+      if(d < 0) score -= 15;
+      else if(d <= 15) score -= 8;
+    }
+
+    return Math.max(0, Math.min(100, score));
+  }
+
+  function totalMotor(codigo, manutencoes, motor){
+    const porHistorico = manutencoes
+      .filter(x => String(x?.codigo || '').trim() === String(codigo || '').trim())
+      .reduce((a,x)=>a + custoRegistro(x), 0);
+
+    if(porHistorico > 0) return porHistorico;
+
+    return lerNumero(motor?.custoAcumulado ?? motor?.custoTotal ?? motor?.custo_total ?? motor?.valorTotal ?? motor?.total);
+  }
+
+  function preencherDashboardForcado(){
+    const db = pegarDB();
+    const motores = db.motores || [];
+    const manutencoes = db.manutencoes || [];
+
+    const elAlertas = document.getElementById('alertasBox');
+    const elCusto = document.getElementById('custoTotalBox');
+    const elHoras = document.getElementById('horasParadaBox');
+    const elMaisCaro = document.getElementById('motorMaisCaroBox');
+    const elRanking = document.getElementById('rankingCustos');
+    const elTipos = document.getElementById('custosPorTipo');
+
+    if(elAlertas){
+      const alertas = motores.map(m=>{
+        const motivos = [];
+        const st = norm(m.statusAtual);
+        const iso = norm(m.estadoIsolacao);
+        if(['alerta','critico','parado'].includes(st)) motivos.push('status ' + (st === 'critico' ? 'crítico' : st));
+        if(iso && iso !== 'boa') motivos.push('isolação ' + (iso === 'critica' ? 'crítica' : iso));
+        if(lerNumero(m.vibracao) > 4.5) motivos.push('vibração alta');
+        if(lerNumero(m.temperatura) >= 85) motivos.push('temperatura alta');
+        return {motor:m, score:scoreMotor(m), motivo:motivos.join(', ')};
+      }).filter(x => x.motivo || x.score < 75).sort((a,b)=>a.score-b.score).slice(0,6);
+
+      elAlertas.innerHTML = alertas.length
+        ? alertas.map(x => `
+            <div class="warning-item">
+              <strong>${x.motor.codigo || '-'}</strong> — ${x.motor.descricao || '-'}<br>
+              <span class="muted">${x.motor.setor || '-'} • score ${x.score}</span><br>
+              <span>${x.motivo || 'monitoramento geral'}</span>
+            </div>
+          `).join('')
+        : '<div class="warning-item">Nenhum alerta crítico no momento.</div>';
+    }
+
+    const custoTotal = manutencoes.length
+      ? manutencoes.reduce((a,m)=>a + custoRegistro(m), 0)
+      : motores.reduce((a,m)=>a + totalMotor(m.codigo, manutencoes, m), 0);
+
+    const horasTotais = manutencoes.reduce((a,m)=>a + horasRegistro(m), 0);
+
+    if(elCusto) elCusto.textContent = moeda(custoTotal);
+    if(elHoras) elHoras.textContent = horasTotais.toLocaleString('pt-BR');
+
+    const ranking = motores.map(m => ({
+      codigo: m.codigo,
+      descricao: m.descricao,
+      total: totalMotor(m.codigo, manutencoes, m)
+    })).sort((a,b)=>b.total-a.total);
+
+    if(elMaisCaro){
+      elMaisCaro.textContent = ranking.length && ranking[0].total > 0
+        ? `${ranking[0].codigo} — ${moeda(ranking[0].total)}`
+        : '-';
+    }
+
+    if(elRanking){
+      elRanking.innerHTML = ranking.length && ranking.some(x=>x.total > 0)
+        ? ranking.slice(0,6).map(x => `
+            <div class="warning-item">
+              <strong>${x.codigo}</strong><br>
+              <span class="muted">${x.descricao || '-'}</span><br>
+              <span>${moeda(x.total)}</span>
+            </div>
+          `).join('')
+        : '<div class="warning-item">Sem custos registrados.</div>';
+    }
+
+    if(elTipos){
+      const mapa = {};
+      manutencoes.forEach(m=>{
+        const tipo = m?.tipo || 'Sem tipo';
+        mapa[tipo] = (mapa[tipo] || 0) + custoRegistro(m);
+      });
+      const tipos = Object.entries(mapa).sort((a,b)=>b[1]-a[1]);
+
+      elTipos.innerHTML = tipos.length
+        ? tipos.map(([tipo,total]) => `
+            <div class="warning-item"><strong>${tipo}</strong><br><span>${moeda(total)}</span></div>
+          `).join('')
+        : '<div class="warning-item">Sem custos por tipo registrados.</div>';
+    }
+  }
+
+  window.preencherDashboardForcado = preencherDashboardForcado;
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(preencherDashboardForcado, 50);
+    setTimeout(preencherDashboardForcado, 300);
+    setTimeout(preencherDashboardForcado, 800);
+  });
+
+  window.addEventListener('load', function(){
+    setTimeout(preencherDashboardForcado, 50);
+    setTimeout(preencherDashboardForcado, 300);
+    setTimeout(preencherDashboardForcado, 800);
+  });
+
+  window.addEventListener('focus', function(){
+    setTimeout(preencherDashboardForcado, 100);
+  });
+
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden){
+      setTimeout(preencherDashboardForcado, 100);
+    }
+  });
+})();
+</script>
+
+
+<script id="patch-motores-cadastrados-auto">
+(function(){
+  function forcarMotoresCadastrados(){
+    try{
+      if(typeof renderMotores === 'function'){
+        renderMotores();
+      }
+    }catch(e){
+      console.error('Falha ao renderizar motores cadastrados automaticamente:', e);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(forcarMotoresCadastrados, 50);
+    setTimeout(forcarMotoresCadastrados, 300);
+    setTimeout(forcarMotoresCadastrados, 800);
+  });
+
+  window.addEventListener('load', function(){
+    setTimeout(forcarMotoresCadastrados, 50);
+    setTimeout(forcarMotoresCadastrados, 300);
+    setTimeout(forcarMotoresCadastrados, 800);
+  });
+
+  window.addEventListener('focus', function(){
+    setTimeout(forcarMotoresCadastrados, 100);
+  });
+
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden){
+      setTimeout(forcarMotoresCadastrados, 100);
+    }
+  });
+
+  const btnAplicar = Array.from(document.querySelectorAll('button')).find(b => /aplicar filtros/i.test((b.textContent || '').trim()));
+  if(btnAplicar){
+    btnAplicar.addEventListener('click', function(){
+      setTimeout(forcarMotoresCadastrados, 50);
+    });
+  }
+})();
+</script>
+
+
+<script id="patch-dashboard-filtros-globais">
+(function(){
+  function lerNumero(v){
+    if(v === null || v === undefined || v === '') return 0;
+    const n = parseFloat(String(v).replace(',', '.').replace(/[^\d.-]/g,''));
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function moeda(v){
+    return Number(v || 0).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+  }
+
+  function norm(v){
+    return String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+  }
+
+  function pegarDB(){
+    try{
+      const raw = localStorage.getItem('motores_eletricos_db_industrial_v1');
+      if(raw){
+        const db = JSON.parse(raw);
+        if(db && typeof db === 'object'){
+          if(!Array.isArray(db.motores)) db.motores = [];
+          if(!Array.isArray(db.manutencoes)) db.manutencoes = [];
+          return db;
+        }
+      }
+    }catch(e){}
+    return {motores:[], manutencoes:[]};
+  }
+
+  function filtrosAtuais(){
+    const busca = (document.getElementById('busca')?.value || '').toLowerCase().trim();
+    const status = document.getElementById('filtroStatus')?.value || '';
+    const setor = (document.getElementById('filtroSetor')?.value || '').toLowerCase().trim();
+    const isolacao = document.getElementById('filtroIsolacao')?.value || '';
+    return {busca, status, setor, isolacao};
+  }
+
+  function motorPassaFiltro(m, f){
+    const alvo = [
+      m.codigo,m.tag,m.setor,m.descricao,m.fabricante,m.modelo,m.localInstalacao
+    ].join(' ').toLowerCase();
+
+    const okBusca = !f.busca || alvo.includes(f.busca);
+    const okStatus = !f.status || (m.statusAtual === f.status);
+    const okSetor = !f.setor || String(m.setor || '').toLowerCase().includes(f.setor);
+    const okIso = !f.isolacao || (m.estadoIsolacao === f.isolacao);
+    return okBusca && okStatus && okSetor && okIso;
+  }
+
+  function custoRegistro(m){
+    const total = lerNumero(m?.custoTotal ?? m?.custo_total ?? m?.total ?? m?.valorTotal);
+    if(total > 0) return total;
+    return (
+      lerNumero(m?.totalPecas ?? m?.custoPecas ?? m?.pecasTotal) +
+      lerNumero(m?.custoMaoObra ?? m?.maoDeObra ?? m?.valorMaoObra) +
+      lerNumero(m?.custoTerceiros ?? m?.terceiros ?? m?.valorTerceiros) +
+      lerNumero(m?.custo ?? m?.valor)
+    );
+  }
+
+  function horasRegistro(m){
+    return lerNumero(m?.horas ?? m?.horasParada ?? m?.horas_parada ?? m?.tempoParada);
+  }
+
+  function scoreMotor(m){
+    let score = 100;
+    const status = norm(m?.statusAtual);
+    const iso = norm(m?.estadoIsolacao);
+    const vib = lerNumero(m?.vibracao);
+    const temp = lerNumero(m?.temperatura);
+
+    if(status === 'alerta') score -= 18;
+    if(status === 'critico') score -= 35;
+    if(status === 'parado') score -= 28;
+
+    if(iso === 'monitorar') score -= 15;
+    if(iso === 'critica') score -= 28;
+
+    if(vib > 4.5) score -= 18;
+    else if(vib > 2.8) score -= 8;
+
+    if(temp >= 85) score -= 20;
+    else if(temp >= 70) score -= 8;
+
+    if(m?.proximaPreventiva){
+      const hoje = new Date();
+      hoje.setHours(0,0,0,0);
+      const alvo = new Date(String(m.proximaPreventiva) + 'T00:00:00');
+      const d = Math.ceil((alvo - hoje)/(1000*60*60*24));
+      if(d < 0) score -= 15;
+      else if(d <= 15) score -= 8;
+    }
+    return Math.max(0, Math.min(100, score));
+  }
+
+  function atualizarDashboardPorFiltro(){
+    const db = pegarDB();
+    const f = filtrosAtuais();
+
+    const motores = (db.motores || []).filter(m => motorPassaFiltro(m, f));
+    const codigos = new Set(motores.map(m => String(m.codigo || '').trim()));
+    const manutencoes = (db.manutencoes || []).filter(x => codigos.has(String(x.codigo || '').trim()));
+
+    const elAlertas = document.getElementById('alertasBox');
+    const elCusto = document.getElementById('custoTotalBox');
+    const elHoras = document.getElementById('horasParadaBox');
+    const elMaisCaro = document.getElementById('motorMaisCaroBox');
+    const elRanking = document.getElementById('rankingCustos');
+    const elTipos = document.getElementById('custosPorTipo');
+
+    if(elAlertas){
+      const alertas = motores.map(m=>{
+        const motivos = [];
+        const st = norm(m.statusAtual);
+        const iso = norm(m.estadoIsolacao);
+        if(['alerta','critico','parado'].includes(st)) motivos.push('status ' + (st === 'critico' ? 'crítico' : st));
+        if(iso && iso !== 'boa') motivos.push('isolação ' + (iso === 'critica' ? 'crítica' : iso));
+        if(lerNumero(m.vibracao) > 4.5) motivos.push('vibração alta');
+        if(lerNumero(m.temperatura) >= 85) motivos.push('temperatura alta');
+        return {motor:m, score:scoreMotor(m), motivo:motivos.join(', ')};
+      }).filter(x => x.motivo || x.score < 75).sort((a,b)=>a.score-b.score).slice(0,6);
+
+      elAlertas.innerHTML = alertas.length
+        ? alertas.map(x => `
+            <div class="warning-item">
+              <strong>${x.motor.codigo || '-'}</strong> — ${x.motor.descricao || '-'}<br>
+              <span class="muted">${x.motor.setor || '-'} • score ${x.score}</span><br>
+              <span>${x.motivo || 'monitoramento geral'}</span>
+            </div>
+          `).join('')
+        : '<div class="warning-item">Nenhum alerta encontrado com os filtros atuais.</div>';
+    }
+
+    const custoTotal = manutencoes.reduce((a,m)=>a + custoRegistro(m), 0);
+    const horasTotais = manutencoes.reduce((a,m)=>a + horasRegistro(m), 0);
+
+    if(elCusto) elCusto.textContent = moeda(custoTotal);
+    if(elHoras) elHoras.textContent = horasTotais.toLocaleString('pt-BR');
+
+    const ranking = motores.map(m => ({
+      codigo: m.codigo,
+      descricao: m.descricao,
+      total: manutencoes
+        .filter(x => String(x.codigo || '').trim() === String(m.codigo || '').trim())
+        .reduce((a,x)=>a + custoRegistro(x), 0)
+    })).sort((a,b)=>b.total-a.total);
+
+    if(elMaisCaro){
+      elMaisCaro.textContent = ranking.length && ranking[0].total > 0
+        ? `${ranking[0].codigo} — ${moeda(ranking[0].total)}`
+        : '-';
+    }
+
+    if(elRanking){
+      elRanking.innerHTML = ranking.length && ranking.some(x=>x.total > 0)
+        ? ranking.slice(0,6).map(x => `
+            <div class="warning-item">
+              <strong>${x.codigo}</strong><br>
+              <span class="muted">${x.descricao || '-'}</span><br>
+              <span>${moeda(x.total)}</span>
+            </div>
+          `).join('')
+        : '<div class="warning-item">Sem custos registrados com os filtros atuais.</div>';
+    }
+
+    if(elTipos){
+      const mapa = {};
+      manutencoes.forEach(m=>{
+        const tipo = m?.tipo || 'Sem tipo';
+        mapa[tipo] = (mapa[tipo] || 0) + custoRegistro(m);
+      });
+      const tipos = Object.entries(mapa).sort((a,b)=>b[1]-a[1]);
+
+      elTipos.innerHTML = tipos.length
+        ? tipos.map(([tipo,total]) => `
+            <div class="warning-item"><strong>${tipo}</strong><br><span>${moeda(total)}</span></div>
+          `).join('')
+        : '<div class="warning-item">Sem custos por tipo com os filtros atuais.</div>';
+    }
+  }
+
+  function ligarFiltrosDashboard(){
+    const ids = ['busca','filtroStatus','filtroSetor','filtroIsolacao'];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      const evt = (id === 'filtroStatus' || id === 'filtroIsolacao') ? 'change' : 'input';
+      el.addEventListener(evt, function(){
+        setTimeout(atualizarDashboardPorFiltro, 0);
+      });
+    });
+
+    const btnAplicar = Array.from(document.querySelectorAll('button')).find(b => /aplicar filtros/i.test((b.textContent || '').trim()));
+    if(btnAplicar){
+      btnAplicar.addEventListener('click', function(){
+        setTimeout(atualizarDashboardPorFiltro, 0);
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    ligarFiltrosDashboard();
+    setTimeout(atualizarDashboardPorFiltro, 60);
+    setTimeout(atualizarDashboardPorFiltro, 300);
+  });
+
+  window.addEventListener('load', function(){
+    setTimeout(atualizarDashboardPorFiltro, 60);
+    setTimeout(atualizarDashboardPorFiltro, 300);
+  });
+
+  window.addEventListener('focus', function(){
+    setTimeout(atualizarDashboardPorFiltro, 80);
+  });
+})();
+</script>
+
+</body>
+</html>
